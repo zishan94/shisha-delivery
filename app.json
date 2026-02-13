@@ -4,12 +4,11 @@
     "slug": "shisha-delivery",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
     "scheme": "shisha-delivery",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "backgroundColor": "#0A0A0F"
+      "backgroundColor": "#F5F5F0"
     },
     "ios": {
       "supportsTablet": true,
@@ -21,7 +20,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#0A0A0F"
+        "backgroundColor": "#F5F5F0"
       },
       "package": "com.shisha.delivery",
       "permissions": [
@@ -34,7 +33,13 @@
       "expo-router",
       "expo-location",
       "expo-asset",
-      "expo-font"
+      "expo-font",
+      [
+        "expo-notifications",
+        {
+          "color": "#1A1A2E"
+        }
+      ]
     ]
   }
 }

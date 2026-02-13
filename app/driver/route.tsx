@@ -130,7 +130,7 @@ export default function RouteScreen() {
                 <Text style={styles.stopName}>{order.product_emoji} {order.product_name}</Text>
                 <Text style={styles.stopAddress}>{order.consumer_name} — {order.amount_grams}g</Text>
                 {order.delivery_address && (
-                  <Text style={styles.stopAddress} numberOfLines={1}>📍 {order.delivery_address}</Text>
+                  <Text style={styles.stopAddress}>📍 {order.delivery_address}</Text>
                 )}
               </View>
               <View style={styles.stopEta}>

@@ -91,6 +91,37 @@ router.get('/driver/:driverId', (req, res) => {
   res.json(orders);
 });
 
+// Get queue position for an order
+router.get('/:id/queue', (req, res) => {
+  const order = db.prepare('SELECT id, status, created_at FROM orders WHERE id = ?').get(req.params.id) as any;
+  if (!order) return res.status(404).json({ error: 'Order not found' });
+
+  // Count orders ahead (created before this one, still active)
+  const ahead = db.prepare(`
+    SELECT COUNT(*) as count FROM orders
+    WHERE status IN ('pending', 'approved', 'assigned')
+      AND created_at < ?
+      AND id != ?
+  `).get(order.created_at, order.id) as any;
+
+  const totalActive = db.prepare(`
+    SELECT COUNT(*) as count FROM orders
+    WHERE status IN ('pending', 'approved', 'assigned', 'delivering')
+  `).get() as any;
+
+  const position = ahead.count;
+  // Rough estimate: ~8 minutes per order ahead
+  const estimated_wait_minutes = Math.max(5, position * 8);
+
+  res.json({
+    order_id: order.id,
+    status: order.status,
+    position,
+    total_active: totalActive.count,
+    estimated_wait_minutes,
+  });
+});
+
 // Get single order
 router.get('/:id', (req, res) => {
   const order = db.prepare(`

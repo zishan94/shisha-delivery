@@ -9,7 +9,7 @@ import OrderCard from '@/components/OrderCard';
 import SkeletonLoader from '@/components/SkeletonLoader';
 import AnimatedPressable from '@/components/AnimatedPressable';
 import { useSocket } from '@/contexts/SocketContext';
-import { Colors, FontSize, Spacing, BorderRadius, Shadows } from '@/constants/theme';
+import { Colors, FontSize, FontWeight, Spacing, BorderRadius, Shadows } from '@/constants/theme';
 import { API_URL } from '@/constants/config';
 import { showAlert } from '@/utils/alert';
 import { hapticSuccess, hapticError } from '@/utils/haptics';
@@ -108,10 +108,11 @@ export default function ApproverDashboard() {
   };
 
   const renderOrder = ({ item, index }: { item: any; index: number }) => (
-    <View>
+    <View style={styles.orderWrapper}>
       <OrderCard
         order={item}
         showConsumer
+        showGeoData
         selectable={batchMode}
         selected={selected.has(item.id)}
         index={index}
@@ -120,18 +121,18 @@ export default function ApproverDashboard() {
       {!batchMode && (
         <View style={styles.actionRow}>
           <AnimatedPressable style={styles.rejectBtn} onPress={() => rejectOrder(item.id)}>
-            <Ionicons name="close" size={18} color={Colors.error} />
-            <Text style={styles.rejectText}>Reject</Text>
+            <Ionicons name="close-circle" size={16} color={Colors.error} />
+            <Text style={styles.rejectText}>Ablehnen</Text>
           </AnimatedPressable>
           <AnimatedPressable onPress={() => router.push({ pathname: '/approver/chat', params: { orderId: item.id.toString() } } as any)}>
             <View style={styles.chatBtn}>
-              <Ionicons name="chatbubble-outline" size={18} color={Colors.textSecondary} />
+              <Ionicons name="chatbubble-outline" size={17} color={Colors.textSecondary} />
             </View>
           </AnimatedPressable>
           <AnimatedPressable style={styles.approveBtn} onPress={() => approveOrder(item.id)}>
             <View style={styles.approveBtnInner}>
-              <Ionicons name="checkmark" size={18} color="#fff" />
-              <Text style={styles.approveText}>Approve</Text>
+              <Ionicons name="checkmark-circle" size={16} color="#fff" />
+              <Text style={styles.approveText}>Genehmigen</Text>
             </View>
           </AnimatedPressable>
         </View>
@@ -142,8 +143,8 @@ export default function ApproverDashboard() {
   return (
     <View style={styles.container}>
       <GradientHeader
-        title="✅ Pending Orders"
-        subtitle={`${orders.length} order${orders.length !== 1 ? 's' : ''} awaiting review`}
+        title="Ausstehende Bestellungen"
+        subtitle={`${orders.length} Bestellung${orders.length !== 1 ? 'en' : ''} warten auf Prüfung`}
         right={
           <View style={styles.headerRight}>
             {orders.length > 0 && (
@@ -214,32 +215,55 @@ const styles = StyleSheet.create({
     ...Shadows.lg,
   },
   batchText: { color: '#fff', fontSize: FontSize.lg, fontWeight: '800' },
+  orderWrapper: {
+    marginBottom: Spacing.md,
+  },
   actionRow: {
-    flexDirection: 'row', gap: Spacing.md,
-    marginBottom: Spacing.lg, marginTop: Spacing.xs,
-    paddingHorizontal: Spacing.sm,
+    flexDirection: 'row', 
+    gap: Spacing.sm,
+    marginTop: -4,
+    paddingHorizontal: 2,
   },
   rejectBtn: {
-    flex: 1, backgroundColor: Colors.surface, padding: Spacing.md,
-    borderRadius: BorderRadius.xl, alignItems: 'center',
-    flexDirection: 'row', justifyContent: 'center', gap: 6,
+    flex: 1, 
+    backgroundColor: Colors.surface, 
+    paddingVertical: 12,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.lg, 
+    alignItems: 'center',
+    flexDirection: 'row', 
+    justifyContent: 'center', 
+    gap: 5,
+    borderWidth: 1,
+    borderColor: `${Colors.error}20`,
     ...Shadows.sm,
   },
-  rejectText: { color: Colors.error, fontWeight: '700', fontSize: FontSize.md },
+  rejectText: { color: Colors.error, fontWeight: '700', fontSize: FontSize.sm },
   chatBtn: {
-    padding: Spacing.md, borderRadius: BorderRadius.xl,
+    paddingVertical: 12, 
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.lg,
     backgroundColor: Colors.surface,
-    justifyContent: 'center', alignItems: 'center', width: 52,
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    width: 48,
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.05)',
     ...Shadows.sm,
   },
   approveBtn: { flex: 1 },
   approveBtnInner: {
-    padding: Spacing.md, borderRadius: BorderRadius.xl, alignItems: 'center',
-    flexDirection: 'row', justifyContent: 'center', gap: 6,
+    paddingVertical: 12,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.lg, 
+    alignItems: 'center',
+    flexDirection: 'row', 
+    justifyContent: 'center', 
+    gap: 5,
     backgroundColor: Colors.success,
     ...Shadows.md,
   },
-  approveText: { color: '#fff', fontWeight: '800', fontSize: FontSize.md },
+  approveText: { color: '#fff', fontWeight: '800', fontSize: FontSize.sm },
   empty: { 
     alignItems: 'center', 
     marginTop: Spacing.xxl,

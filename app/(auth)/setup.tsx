@@ -16,7 +16,7 @@ export default function SetupScreen() {
   const router = useRouter();
 
   const handleContinue = async () => {
-    if (!name.trim()) { setError('Enter your name'); return; }
+    if (!name.trim()) { setError('Bitte gib einen Namen ein'); return; }
     setLoading(true);
     setError('');
     try {
@@ -24,7 +24,7 @@ export default function SetupScreen() {
       hapticSuccess();
       router.replace(`/${user.role}` as any);
     } catch (e: any) {
-      setError(e.message || 'Failed to save profile');
+      setError(e.message || 'Profil konnte nicht gespeichert werden');
     } finally {
       setLoading(false);
     }
@@ -33,15 +33,16 @@ export default function SetupScreen() {
   return (
     <View style={styles.container}>
       <Animated.Text entering={FadeInDown.delay(100).springify()} style={styles.emoji}>👋</Animated.Text>
-      <Animated.Text entering={FadeInDown.delay(200).springify()} style={styles.title}>Welcome!</Animated.Text>
-      <Animated.Text entering={FadeInDown.delay(300).springify()} style={styles.subtitle}>What's your name?</Animated.Text>
+      <Animated.Text entering={FadeInDown.delay(200).springify()} style={styles.title}>Willkommen!</Animated.Text>
+      <Animated.Text entering={FadeInDown.delay(300).springify()} style={styles.subtitle}>Wie sollen wir dich nennen?</Animated.Text>
 
       <Animated.View entering={FadeInUp.delay(400).springify()} style={styles.form}>
+        <Text style={styles.hint}>Name zur Identifikation — kann auch ein Pseudonym sein</Text>
         <TextInput
           style={styles.input}
           value={name}
           onChangeText={setName}
-          placeholder="Enter your name"
+          placeholder="Dein Name oder Pseudonym"
           placeholderTextColor={Colors.textMuted}
           autoFocus
         />
@@ -55,7 +56,7 @@ export default function SetupScreen() {
             end={{ x: 1, y: 0 }}
             style={styles.button}
           >
-            <Text style={styles.buttonText}>{loading ? 'Setting up...' : 'Start Ordering →'}</Text>
+            <Text style={styles.buttonText}>{loading ? 'Wird eingerichtet...' : 'Jetzt bestellen →'}</Text>
           </LinearGradient>
         </AnimatedPressable>
       </Animated.View>
@@ -65,40 +66,22 @@ export default function SetupScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-    padding: Spacing.xl,
-    justifyContent: 'center',
+    flex: 1, backgroundColor: Colors.background,
+    padding: Spacing.xl, justifyContent: 'center',
   },
   emoji: { fontSize: 60, textAlign: 'center', marginBottom: Spacing.md },
-  title: {
-    fontSize: FontSize.xxl,
-    fontWeight: '800',
-    color: Colors.text,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: FontSize.md,
-    color: Colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: Spacing.xl,
-  },
+  title: { fontSize: FontSize.xxl, fontWeight: '800', color: Colors.text, textAlign: 'center' },
+  subtitle: { fontSize: FontSize.md, color: Colors.textSecondary, textAlign: 'center', marginBottom: Spacing.lg },
   form: { gap: Spacing.md },
+  hint: {
+    fontSize: FontSize.sm, color: Colors.textMuted, textAlign: 'center', lineHeight: 18,
+  },
   input: {
-    backgroundColor: Colors.inputBg,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    borderRadius: BorderRadius.md,
-    padding: Spacing.lg,
-    fontSize: FontSize.lg,
-    color: Colors.text,
-    textAlign: 'center',
+    backgroundColor: Colors.inputBg, borderWidth: 1, borderColor: Colors.border,
+    borderRadius: BorderRadius.md, padding: Spacing.lg, fontSize: FontSize.lg,
+    color: Colors.text, textAlign: 'center',
   },
   error: { color: Colors.error, fontSize: FontSize.sm, textAlign: 'center' },
-  button: {
-    borderRadius: BorderRadius.md,
-    padding: Spacing.md,
-    alignItems: 'center',
-  },
+  button: { borderRadius: BorderRadius.md, padding: Spacing.md, alignItems: 'center' },
   buttonText: { fontSize: FontSize.md, fontWeight: '700', color: '#fff' },
 });

@@ -54,8 +54,8 @@ export default function OrdersScreen() {
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.header}>
-        <Text style={styles.title}>My Orders</Text>
-        <Text style={styles.subtitle}>{orders.length} order{orders.length !== 1 ? 's' : ''}</Text>
+        <Text style={styles.title}>Meine Bestellungen</Text>
+        <Text style={styles.subtitle}>{orders.length} Bestellung{orders.length !== 1 ? 'en' : ''}</Text>
       </View>
       {!loaded ? (
         <SkeletonLoader count={3} />
@@ -77,8 +77,8 @@ export default function OrdersScreen() {
           ListEmptyComponent={
             <Animated.View entering={FadeIn.delay(200)} style={styles.emptyContainer}>
               <Text style={styles.emptyEmoji}>📦</Text>
-              <Text style={styles.emptyText}>No orders yet</Text>
-              <Text style={styles.emptySubtext}>Browse products and place your first order!</Text>
+              <Text style={styles.emptyText}>Noch keine Bestellungen</Text>
+              <Text style={styles.emptySubtext}>Stöbere durch die Produkte und gib deine erste Bestellung auf!</Text>
             </Animated.View>
           }
         />

@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import Animated, { FadeInDown, FadeIn, runOnJS } from 'react-native-reanimated';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
 import { Colors, FontSize } from '@/constants/theme';
@@ -8,51 +8,44 @@ import { Colors, FontSize } from '@/constants/theme';
 export default function Index() {
   const { user, isLoading } = useAuth();
   const router = useRouter();
-
-  const navigateToApp = () => {
-    if (!user) {
-      router.replace('/(auth)/phone');
-    } else if (!user.role || !user.name) {
-      router.replace('/(auth)/setup');
-    } else {
-      router.replace(`/${user.role}` as any);
-    }
-  };
+  const [navigating, setNavigating] = useState(false);
 
   useEffect(() => {
-    if (!isLoading) {
-      // Wait for animation to complete, then navigate
-      const timer = setTimeout(navigateToApp, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [isLoading]);
+    if (isLoading || navigating) return;
 
-  if (isLoading) {
-    return (
-      <View style={styles.container}>
-        <Animated.View entering={FadeIn.duration(800)} style={styles.content}>
-          <Animated.Text entering={FadeInDown.delay(200).duration(800)} style={styles.brand}>
-            SHISHA
-          </Animated.Text>
-          <Animated.View entering={FadeInDown.delay(400).duration(800)} style={styles.iconContainer}>
-            <Text style={styles.icon}>💊</Text>
-          </Animated.View>
-          <Animated.Text entering={FadeInDown.delay(600).duration(800)} style={styles.tagline}>
-            Premium Delivery
-          </Animated.Text>
-        </Animated.View>
-      </View>
-    );
-  }
+    // Navigate immediately once auth is resolved
+    setNavigating(true);
 
-  // Show loading state briefly during navigation
+    // Use a microtask delay so the router is fully mounted
+    const timer = setTimeout(() => {
+      if (!user) {
+        router.replace('/(auth)/phone');
+      } else if (!user.role || !user.name) {
+        router.replace('/(auth)/setup');
+      } else {
+        router.replace(`/${user.role}` as any);
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [isLoading, user]);
+
   return (
     <View style={styles.container}>
-      <Text style={styles.brand}>SHISHA</Text>
-      <View style={styles.iconContainer}>
+      <Animated.View entering={FadeIn.duration(600)} style={styles.content}>
+        <Animated.Text entering={FadeInDown.delay(100).duration(500)} style={styles.brand}>
+          SHISHA
+        </Animated.Text>
         <Text style={styles.icon}>💊</Text>
-      </View>
-      <Text style={styles.tagline}>Premium Delivery</Text>
+        <Animated.Text entering={FadeInDown.delay(200).duration(500)} style={styles.tagline}>
+          Premium Lieferung
+        </Animated.Text>
+        <ActivityIndicator
+          size="small"
+          color={Colors.textMuted}
+          style={styles.loader}
+        />
+      </Animated.View>
     </View>
   );
 }
@@ -72,18 +65,19 @@ const styles = StyleSheet.create({
     fontWeight: '300',
     color: Colors.primary,
     letterSpacing: 8,
-    marginBottom: 24,
-  },
-  iconContainer: {
-    marginBottom: 16,
+    marginBottom: 20,
   },
   icon: {
-    fontSize: 64,
+    fontSize: 56,
+    marginBottom: 12,
   },
   tagline: {
     fontSize: FontSize.lg,
     color: Colors.textSecondary,
     fontWeight: '400',
     letterSpacing: 2,
+  },
+  loader: {
+    marginTop: 32,
   },
 });

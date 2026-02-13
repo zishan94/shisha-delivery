@@ -17,9 +17,9 @@ export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
 
   const handleLogout = () => {
-    showAlert('Logout', 'Are you sure?', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Logout', style: 'destructive', onPress: async () => {
+    showAlert('Abmelden', 'Bist du sicher?', [
+      { text: 'Abbrechen', style: 'cancel' },
+      { text: 'Abmelden', style: 'destructive', onPress: async () => {
         await logout();
         router.replace('/(auth)/phone');
       }},
@@ -29,24 +29,24 @@ export default function ProfileScreen() {
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.header}>
-        <Text style={styles.title}>Profile</Text>
+        <Text style={styles.title}>Profil</Text>
       </View>
       <View style={styles.content}>
         <Animated.View entering={FadeInDown.delay(100).springify()} style={styles.avatar}>
           <Text style={styles.avatarText}>{user?.name?.[0]?.toUpperCase() || '?'}</Text>
         </Animated.View>
-        <Animated.Text entering={FadeInDown.delay(200).springify()} style={styles.name}>{user?.name || 'Unknown'}</Animated.Text>
+        <Animated.Text entering={FadeInDown.delay(200).springify()} style={styles.name}>{user?.name || 'Unbekannt'}</Animated.Text>
         <Animated.Text entering={FadeInDown.delay(250).springify()} style={styles.phone}>{user?.phone}</Animated.Text>
         <Animated.View entering={FadeInDown.delay(300).springify()} style={styles.badge}>
           <Ionicons name="cart" size={14} color={Colors.primary} />
-          <Text style={styles.badgeText}>Consumer</Text>
+          <Text style={styles.badgeText}>Kunde</Text>
         </Animated.View>
         <Animated.View entering={FadeInDown.delay(400).springify()} style={styles.infoCard}>
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Connection</Text>
+            <Text style={styles.infoLabel}>Verbindung</Text>
             <View style={styles.statusRow}>
               <View style={[styles.dot, { backgroundColor: isConnected ? Colors.success : Colors.error }]} />
-              <Text style={styles.infoValue}>{isConnected ? 'Connected' : 'Disconnected'}</Text>
+              <Text style={styles.infoValue}>{isConnected ? 'Verbunden' : 'Getrennt'}</Text>
             </View>
           </View>
           <View style={styles.infoRow}>
@@ -54,14 +54,14 @@ export default function ProfileScreen() {
             <Text style={styles.infoValue}>#{user?.id}</Text>
           </View>
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Joined</Text>
+            <Text style={styles.infoLabel}>Beigetreten</Text>
             <Text style={styles.infoValue}>{user?.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}</Text>
           </View>
         </Animated.View>
         <Animated.View entering={FadeInDown.delay(500).springify()}>
           <AnimatedPressable style={styles.logoutBtn} onPress={handleLogout}>
             <Ionicons name="log-out-outline" size={20} color="#fff" />
-            <Text style={styles.logoutText}>Logout</Text>
+            <Text style={styles.logoutText}>Abmelden</Text>
           </AnimatedPressable>
         </Animated.View>
       </View>

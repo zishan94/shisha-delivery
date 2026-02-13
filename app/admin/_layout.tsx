@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, Shadows, FontWeight } from '@/constants/theme';
 
-export default function ApproverLayout() {
+export default function AdminLayout() {
   const insets = useSafeAreaInsets();
   const bottomPadding = Platform.OS === 'ios' ? Math.max(insets.bottom, 8) : 10;
 
@@ -22,7 +22,7 @@ export default function ApproverLayout() {
           paddingHorizontal: 8,
           ...Shadows.lg,
         },
-        tabBarActiveTintColor: Colors.tabActive,
+        tabBarActiveTintColor: Colors.secondary,
         tabBarInactiveTintColor: Colors.tabInactive,
         tabBarLabelStyle: {
           fontSize: 11,
@@ -37,22 +37,46 @@ export default function ApproverLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Ausstehend',
+          title: 'Dashboard',
           tabBarIcon: ({ color, focused }) => (
             <View style={styles.iconWrap}>
-              <Ionicons name={focused ? 'hourglass' : 'hourglass-outline'} size={22} color={color} />
+              <Ionicons name={focused ? 'grid' : 'grid-outline'} size={22} color={color} />
               {focused && <View style={[styles.activeDot, { backgroundColor: color }]} />}
             </View>
           ),
         }}
       />
       <Tabs.Screen
-        name="active"
+        name="products"
         options={{
-          title: 'Aktiv',
+          title: 'Produkte',
           tabBarIcon: ({ color, focused }) => (
             <View style={styles.iconWrap}>
-              <Ionicons name={focused ? 'map' : 'map-outline'} size={22} color={color} />
+              <Ionicons name={focused ? 'cube' : 'cube-outline'} size={22} color={color} />
+              {focused && <View style={[styles.activeDot, { backgroundColor: color }]} />}
+            </View>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="orders"
+        options={{
+          title: 'Bestellungen',
+          tabBarIcon: ({ color, focused }) => (
+            <View style={styles.iconWrap}>
+              <Ionicons name={focused ? 'receipt' : 'receipt-outline'} size={22} color={color} />
+              {focused && <View style={[styles.activeDot, { backgroundColor: color }]} />}
+            </View>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="users"
+        options={{
+          title: 'Konten',
+          tabBarIcon: ({ color, focused }) => (
+            <View style={styles.iconWrap}>
+              <Ionicons name={focused ? 'people' : 'people-outline'} size={22} color={color} />
               {focused && <View style={[styles.activeDot, { backgroundColor: color }]} />}
             </View>
           ),
@@ -70,8 +94,9 @@ export default function ApproverLayout() {
           ),
         }}
       />
-      <Tabs.Screen name="chat" options={{ href: null }} />
-      <Tabs.Screen name="order-detail" options={{ href: null }} />
+      {/* Hidden modal screens */}
+      <Tabs.Screen name="product-edit" options={{ href: null }} />
+      <Tabs.Screen name="category-manage" options={{ href: null }} />
     </Tabs>
   );
 }
