@@ -5,7 +5,7 @@ const router = Router();
 
 // Create order
 router.post('/', (req, res) => {
-  const { consumer_id, product_id, amount_grams, delivery_address, delivery_lat, delivery_lng } = req.body;
+  const { consumer_id, product_id, amount_grams, delivery_address, delivery_lat, delivery_lng, customer_name } = req.body;
 
   const product = db.prepare('SELECT * FROM products WHERE id = ?').get(product_id) as any;
   if (!product) return res.status(404).json({ error: 'Product not found' });
@@ -17,9 +17,9 @@ router.post('/', (req, res) => {
   const total_price = Math.round(product.price_per_gram * amount_grams * 100) / 100;
 
   const result = db.prepare(`
-    INSERT INTO orders (consumer_id, product_id, amount_grams, total_price, delivery_address, delivery_lat, delivery_lng)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
-  `).run(consumer_id, product_id, amount_grams, total_price, delivery_address, delivery_lat, delivery_lng);
+    INSERT INTO orders (consumer_id, product_id, amount_grams, total_price, delivery_address, delivery_lat, delivery_lng, customer_name)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(consumer_id, product_id, amount_grams, total_price, delivery_address, delivery_lat, delivery_lng, customer_name);
 
   const order = db.prepare(`
     SELECT o.*, p.name as product_name, p.image_url as product_emoji, p.price_per_gram,

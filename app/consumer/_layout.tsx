@@ -9,15 +9,20 @@ export default function ConsumerLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: Colors.surface,
-          borderTopColor: Colors.border,
+          backgroundColor: '#FFFFFF',
+          borderTopColor: 'rgba(0,0,0,0.06)',
           borderTopWidth: 1,
           height: 64,
           paddingBottom: 10,
           paddingTop: 6,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 8,
+          elevation: 8,
         },
         tabBarActiveTintColor: Colors.primary,
-        tabBarInactiveTintColor: Colors.textMuted,
+        tabBarInactiveTintColor: '#9B9B9B',
         tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
       }}
     >

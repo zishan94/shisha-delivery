@@ -8,7 +8,7 @@ import MapViewComponent from '@/components/MapView';
 import SkeletonLoader from '@/components/SkeletonLoader';
 import AnimatedPressable from '@/components/AnimatedPressable';
 import { useSocket } from '@/contexts/SocketContext';
-import { Colors, FontSize, Spacing, BorderRadius } from '@/constants/theme';
+import { Colors, FontSize, Spacing, BorderRadius, Shadows } from '@/constants/theme';
 import { API_URL } from '@/constants/config';
 import { showAlert } from '@/utils/alert';
 import { hapticSuccess, hapticLight } from '@/utils/haptics';
@@ -121,11 +121,12 @@ export default function ActiveScreen() {
   return (
     <View style={styles.container}>
       <GradientHeader
-        title="Active Orders"
-        subtitle={`${orders.length} active`}
+        title="🚀 Active Orders"
+        subtitle={`${orders.length} order${orders.length !== 1 ? 's' : ''} in progress`}
         right={
           <TouchableOpacity onPress={() => setViewMode(viewMode === 'list' ? 'map' : 'list')} style={styles.toggleBtn}>
-            <Ionicons name={viewMode === 'list' ? 'map-outline' : 'list-outline'} size={20} color="#fff" />
+            <Ionicons name={viewMode === 'list' ? 'map-outline' : 'list-outline'} size={22} color="#fff" />
+            <Text style={styles.toggleBtnText}>{viewMode === 'list' ? 'Map' : 'List'}</Text>
           </TouchableOpacity>
         }
       />
@@ -209,50 +210,122 @@ export default function ActiveScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background },
-  list: { padding: Spacing.md },
+  list: { padding: Spacing.md, paddingBottom: Spacing.xxl },
   toggleBtn: {
-    backgroundColor: 'rgba(255,255,255,0.2)', padding: 8, borderRadius: 8,
+    backgroundColor: 'rgba(255,255,255,0.25)', 
+    paddingHorizontal: Spacing.md, 
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.full,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    shadowColor: 'rgba(0,0,0,0.3)',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  toggleBtnText: {
+    color: '#fff',
+    fontSize: FontSize.sm,
+    fontWeight: '700',
+    textShadowColor: 'rgba(0,0,0,0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   assignBtn: {
-    backgroundColor: Colors.info, padding: Spacing.sm, borderRadius: BorderRadius.md,
-    alignItems: 'center', marginBottom: Spacing.md, marginTop: -Spacing.xs,
-    flexDirection: 'row', justifyContent: 'center', gap: 6,
+    backgroundColor: Colors.primary, 
+    padding: Spacing.md, 
+    borderRadius: BorderRadius.xl,
+    alignItems: 'center', 
+    marginBottom: Spacing.lg, 
+    marginTop: Spacing.xs,
+    flexDirection: 'row', 
+    justifyContent: 'center', 
+    gap: Spacing.sm,
+    ...Shadows.md,
   },
-  assignText: { color: '#fff', fontWeight: '700' },
-  empty: { alignItems: 'center', marginTop: Spacing.xxl },
-  emptyEmoji: { fontSize: 48 },
-  emptyText: { fontSize: FontSize.lg, color: Colors.text, fontWeight: '700', marginTop: Spacing.md },
+  assignText: { color: '#fff', fontWeight: '800', fontSize: FontSize.md },
+  empty: { 
+    alignItems: 'center', 
+    marginTop: Spacing.xxl,
+    paddingHorizontal: Spacing.lg,
+  },
+  emptyEmoji: { fontSize: 64, marginBottom: Spacing.lg },
+  emptyText: { 
+    fontSize: FontSize.xl, 
+    color: Colors.text, 
+    fontWeight: '800',
+    textAlign: 'center',
+  },
   modalOverlay: {
     flex: 1, backgroundColor: Colors.overlay,
     justifyContent: 'center', alignItems: 'center', padding: Spacing.xl,
   },
   modalContent: {
-    backgroundColor: Colors.surface, borderRadius: BorderRadius.xl,
-    padding: Spacing.lg, width: '100%', maxWidth: 400, maxHeight: '70%',
-    borderWidth: 1, borderColor: Colors.cardBorder,
+    backgroundColor: Colors.surface, borderRadius: BorderRadius.xxl,
+    padding: Spacing.xl, width: '100%', maxWidth: 400, maxHeight: '75%',
+    ...Shadows.md,
   },
-  modalTitle: { fontSize: FontSize.xl, fontWeight: '800', color: Colors.text, textAlign: 'center' },
-  modalSubtitle: { fontSize: FontSize.sm, color: Colors.textSecondary, textAlign: 'center', marginBottom: Spacing.lg },
-  driverList: { maxHeight: 300 },
-  noDrivers: { color: Colors.textMuted, textAlign: 'center', padding: Spacing.lg },
+  modalTitle: { 
+    fontSize: FontSize.xxl, 
+    fontWeight: '900', 
+    color: Colors.text, 
+    textAlign: 'center',
+    marginBottom: 4,
+  },
+  modalSubtitle: { 
+    fontSize: FontSize.md, 
+    color: Colors.textSecondary, 
+    textAlign: 'center', 
+    marginBottom: Spacing.xl 
+  },
+  driverList: { maxHeight: 320 },
+  noDrivers: { 
+    color: Colors.textMuted, 
+    textAlign: 'center', 
+    padding: Spacing.xl,
+    fontSize: FontSize.md,
+  },
   driverItem: {
     flexDirection: 'row', alignItems: 'center',
-    backgroundColor: Colors.card, borderRadius: BorderRadius.md,
-    padding: Spacing.md, marginBottom: Spacing.sm,
-    borderWidth: 1, borderColor: Colors.cardBorder,
+    backgroundColor: Colors.surface, borderRadius: BorderRadius.xl,
+    padding: Spacing.lg, marginBottom: Spacing.md,
+    ...Shadows.md,
   },
   driverAvatar: {
-    width: 44, height: 44, borderRadius: 22, backgroundColor: Colors.info,
-    justifyContent: 'center', alignItems: 'center', marginRight: Spacing.md,
+    width: 52, height: 52, borderRadius: 26, backgroundColor: Colors.info,
+    justifyContent: 'center', alignItems: 'center', marginRight: Spacing.lg,
+    shadowColor: Colors.info,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 3,
   },
-  driverAvatarText: { color: '#fff', fontWeight: '800', fontSize: FontSize.lg },
+  driverAvatarText: { color: '#fff', fontWeight: '900', fontSize: FontSize.xl },
   driverInfo: { flex: 1 },
-  driverName: { fontSize: FontSize.md, fontWeight: '700', color: Colors.text },
-  driverPhone: { fontSize: FontSize.sm, color: Colors.textSecondary },
-  modalCancel: {
-    marginTop: Spacing.md, padding: Spacing.md, borderRadius: BorderRadius.md,
-    backgroundColor: Colors.glassStrong, alignItems: 'center',
-    borderWidth: 1, borderColor: Colors.border,
+  driverName: { 
+    fontSize: FontSize.lg, 
+    fontWeight: '800', 
+    color: Colors.text,
+    marginBottom: 2,
   },
-  modalCancelText: { color: Colors.textSecondary, fontWeight: '600', fontSize: FontSize.md },
+  driverPhone: { 
+    fontSize: FontSize.md, 
+    color: Colors.textSecondary,
+    fontWeight: '500',
+  },
+  modalCancel: {
+    marginTop: Spacing.lg, 
+    padding: Spacing.lg, 
+    borderRadius: BorderRadius.xl,
+    backgroundColor: Colors.surface, 
+    alignItems: 'center',
+    ...Shadows.md,
+  },
+  modalCancelText: { 
+    color: Colors.text, 
+    fontWeight: '700', 
+    fontSize: FontSize.lg 
+  },
 });

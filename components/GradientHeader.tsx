@@ -34,7 +34,7 @@ export default function GradientHeader({ title, subtitle, right }: Props) {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.lg,
+    paddingBottom: Spacing.md,
   },
   content: {
     flexDirection: 'row',

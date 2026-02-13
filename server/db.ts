@@ -43,6 +43,7 @@ export function initDb() {
       delivery_address TEXT,
       delivery_lat REAL,
       delivery_lng REAL,
+      customer_name TEXT,
       status TEXT DEFAULT 'pending' CHECK(status IN ('pending','approved','assigned','delivering','delivered','rejected')),
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       approved_at DATETIME,
@@ -78,11 +79,34 @@ export function initDb() {
       'INSERT INTO products (name, description, price_per_gram, image_url, category) VALUES (?, ?, ?, ?, ?)'
     );
     const products = [
+      // Classic 🍎
       ['Al Fakher Double Apple', 'Classic double apple flavor — the most popular shisha tobacco worldwide. Rich, sweet, and aromatic.', 0.08, '🍎', 'classic'],
+      ['Al Fakher Grape', 'Traditional grape flavor with rich, wine-like notes. Smooth and well-balanced classic.', 0.08, '🍇', 'classic'],
+      ['Adalya The Two Apples', 'Premium double apple with enhanced flavor depth. Perfect balance of sweet and spice.', 0.09, '🍎', 'classic'],
+      
+      // Fruity 🍓
       ['Adalya Love 66', 'Sweet and fruity blend with passion fruit, melon, and a hint of mint. Smooth and refreshing.', 0.10, '💕', 'fruity'],
+      ['Adalya Lady Killer', 'Exotic fruity cocktail with tropical notes. Sweet, vibrant, and incredibly smooth.', 0.10, '💋', 'fruity'],
+      ['Holster Ice Kaktus', 'Refreshing cactus fruit with cooling finish. Unique, exotic, and perfectly balanced.', 0.09, '🌵', 'fruity'],
+      ['Fumari Tangelo', 'Citrus burst with sweet tangelo flavor. Bright, zesty, and energizing experience.', 0.11, '🍊', 'fruity'],
+      
+      // Mint & Fresh 🌿
       ['Tangiers Cane Mint', 'Intense pure peppermint flavor. Strong buzz, bold taste. For experienced smokers.', 0.12, '🌿', 'mint'],
+      ['Al Fakher Mint', 'Classic cooling mint. Clean, crisp, and refreshing with perfect menthol balance.', 0.07, '🌿', 'mint'],
+      
+      // Sweet & Candy 🍬
       ['Fumari White Gummy Bear', 'Sweet gummy bear candy flavor. Light, fun, and incredibly smooth clouds.', 0.11, '🐻', 'sweet'],
-      ['Holster Grp Mnt', 'Grape and mint fusion. Cool, fruity, and perfectly balanced for any session.', 0.09, '🍇', 'fruity'],
+      ['Fumari Blueberry Muffin', 'Bakery-fresh blueberry muffin flavor. Sweet, creamy, and dessert-like experience.', 0.11, '🧁', 'sweet'],
+      
+      // Mix & Cocktail 🍹
+      ['Starbuzz Blue Mist', 'Berry cocktail with mysterious blue flavor. Complex, layered, and captivating taste.', 0.12, '💙', 'mix'],
+      ['Al Fakher Watermelon Mint', 'Perfect summer blend of juicy watermelon and cooling mint. Refreshing and balanced.', 0.08, '🍉', 'mix'],
+      ['Starbuzz Pirates Cave', 'Adventurous mix of tropical fruits and spices. Bold, complex, and unforgettable.', 0.12, '🏴‍☠️', 'mix'],
+      
+      // Premium ⭐
+      ['Darkside Supernova', 'Cosmic blend of exotic fruits and premium tobacco. Intense flavor, premium quality.', 0.14, '🌟', 'premium'],
+      ['Tangiers Kashmir Peach', 'Sophisticated peach with complex undertones. Rich, bold, and distinctly premium.', 0.13, '🍑', 'premium'],
+      ['Darkside Deep Dive', 'Deep ocean of flavor with mysterious blend. Premium tobacco for connoisseurs only.', 0.14, '🌊', 'premium'],
     ];
     for (const p of products) {
       insert.run(...p);

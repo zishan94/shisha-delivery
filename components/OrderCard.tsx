@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
-import { Colors, FontSize, Spacing, BorderRadius, StatusColors, StatusLabels } from '@/constants/theme';
+import { Colors, FontSize, Spacing, BorderRadius, StatusColors, StatusLabels, Shadows } from '@/constants/theme';
 import AnimatedPressable from './AnimatedPressable';
 
 interface Order {
@@ -88,63 +88,80 @@ export default function OrderCard({ order, onPress, showConsumer, selectable, se
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: Colors.card,
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.md,
-    marginBottom: Spacing.sm,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
+    backgroundColor: Colors.surface,
+    borderRadius: BorderRadius.xl,
+    padding: Spacing.lg,
+    marginBottom: Spacing.md,
+    ...Shadows.md,
   },
   cardSelected: {
     borderColor: Colors.primary,
     borderWidth: 2,
+    ...Shadows.lg,
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   emoji: {
-    width: 52,
-    height: 52,
-    borderRadius: BorderRadius.md,
-    backgroundColor: Colors.glassStrong,
+    width: 64,
+    height: 64,
+    borderRadius: BorderRadius.xl,
+    backgroundColor: Colors.background,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: Spacing.md,
+    marginRight: Spacing.lg,
+    ...Shadows.sm,
   },
-  emojiText: { fontSize: 28 },
+  emojiText: { fontSize: 32 },
   info: { flex: 1 },
   productName: {
-    fontSize: FontSize.md,
-    fontWeight: '700',
+    fontSize: FontSize.lg,
+    fontWeight: '800',
     color: Colors.text,
+    marginBottom: 4,
   },
-  metaRow: { flexDirection: 'row', alignItems: 'center', marginTop: 3 },
-  amount: { fontSize: FontSize.sm, color: Colors.textSecondary },
-  priceDot: { fontSize: FontSize.sm, color: Colors.textMuted, marginHorizontal: 6 },
-  price: { fontSize: FontSize.sm, color: Colors.secondary, fontWeight: '700' },
+  metaRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 4 },
+  amount: { 
+    fontSize: FontSize.md, 
+    color: Colors.textSecondary, 
+    fontWeight: '600' 
+  },
+  priceDot: { 
+    fontSize: FontSize.md, 
+    color: Colors.textMuted, 
+    marginHorizontal: 8 
+  },
+  price: { 
+    fontSize: FontSize.md, 
+    color: Colors.secondary, 
+    fontWeight: '800' 
+  },
   consumer: {
-    fontSize: FontSize.xs,
+    fontSize: FontSize.sm,
     color: Colors.primaryLight,
-    marginTop: 3,
+    marginBottom: 3,
+    fontWeight: '600',
   },
   address: {
-    fontSize: FontSize.xs,
+    fontSize: FontSize.sm,
     color: Colors.textMuted,
-    marginTop: 2,
+    fontWeight: '500',
   },
   statusContainer: {
     alignItems: 'flex-end',
-    gap: 6,
+    gap: 8,
   },
   statusBadge: {
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: 4,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: 6,
     borderRadius: BorderRadius.full,
+    ...Shadows.sm,
   },
   statusText: {
-    fontSize: FontSize.xs,
-    fontWeight: '700',
+    fontSize: FontSize.sm,
+    fontWeight: '800',
+    letterSpacing: 0.3,
   },
   checkbox: {
     width: 22,
@@ -164,22 +181,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: Spacing.sm,
-    paddingTop: Spacing.sm,
+    marginTop: Spacing.md,
+    paddingTop: Spacing.md,
     borderTopWidth: 1,
-    borderTopColor: Colors.border,
+    borderTopColor: `${Colors.border}60`,
   },
   orderId: {
-    fontSize: FontSize.xs,
+    fontSize: FontSize.sm,
     color: Colors.textMuted,
-  },
-  driverName: {
-    fontSize: FontSize.xs,
-    color: Colors.info,
     fontWeight: '600',
   },
+  driverName: {
+    fontSize: FontSize.sm,
+    color: Colors.info,
+    fontWeight: '700',
+  },
   time: {
-    fontSize: FontSize.xs,
+    fontSize: FontSize.sm,
     color: Colors.textMuted,
+    fontWeight: '500',
   },
 });

@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import Animated, { FadeIn, FadeInDown, FadeInUp } from 'react-native-reanimated';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '@/contexts/AuthContext';
-import { Colors, FontSize, Spacing, BorderRadius } from '@/constants/theme';
+import { Colors, FontSize, Spacing, BorderRadius, Shadows } from '@/constants/theme';
 import AnimatedPressable from '@/components/AnimatedPressable';
 import { hapticLight, hapticSuccess } from '@/utils/haptics';
 
@@ -16,7 +15,7 @@ export default function PhoneScreen() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPhoneAuth, setShowPhoneAuth] = useState(false);
-  const { requestCode, verifyCode } = useAuth();
+  const { requestCode, verifyCode, setProfile } = useAuth();
   const router = useRouter();
 
   const handleRequestCode = async () => {
@@ -48,7 +47,9 @@ export default function PhoneScreen() {
       const result = await verifyCode(phone, code);
       hapticSuccess();
       if (result.isNew || !result.user.name) {
-        router.replace('/(auth)/setup');
+        // Automatically set profile to 'Customer' with 'consumer' role and navigate to consumer
+        await setProfile('Customer', 'consumer');
+        router.replace('/consumer' as any);
       } else {
         router.replace(`/${result.user.role}` as any);
       }
@@ -68,7 +69,7 @@ export default function PhoneScreen() {
             <Ionicons name="arrow-back" size={28} color={Colors.text} />
           </TouchableOpacity>
 
-          <Animated.Text entering={FadeInDown.delay(100).springify()} style={styles.emoji}>📱</Animated.Text>
+          <Animated.Text entering={FadeInDown.delay(100).springify()} style={styles.emoji}>💊</Animated.Text>
           <Animated.Text entering={FadeInDown.delay(200).springify()} style={styles.title}>Phone Login</Animated.Text>
           <Animated.Text entering={FadeInDown.delay(300).springify()} style={styles.subtitle}>Enter your phone to start ordering</Animated.Text>
 
@@ -86,14 +87,9 @@ export default function PhoneScreen() {
                   autoFocus
                 />
                 <AnimatedPressable onPress={handleRequestCode} disabled={loading}>
-                  <LinearGradient
-                    colors={[Colors.gradientStart, Colors.gradientEnd]}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                    style={styles.button}
-                  >
+                  <View style={styles.button}>
                     <Text style={styles.buttonText}>{loading ? 'Sending...' : 'Get Verification Code'}</Text>
-                  </LinearGradient>
+                  </View>
                 </AnimatedPressable>
               </>
             ) : (
@@ -111,14 +107,9 @@ export default function PhoneScreen() {
                   autoFocus
                 />
                 <AnimatedPressable onPress={handleVerify} disabled={loading}>
-                  <LinearGradient
-                    colors={[Colors.gradientStart, Colors.gradientEnd]}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                    style={styles.button}
-                  >
+                  <View style={styles.button}>
                     <Text style={styles.buttonText}>{loading ? 'Verifying...' : 'Verify & Continue'}</Text>
-                  </LinearGradient>
+                  </View>
                 </AnimatedPressable>
                 <TouchableOpacity onPress={() => { setCodeSent(false); setCode(''); }} style={styles.linkBtn}>
                   <Text style={styles.linkText}>← Change number</Text>
@@ -132,30 +123,25 @@ export default function PhoneScreen() {
     );
   }
 
-  // Landing screen
+  // Landing screen - Luxury design
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <Animated.Text entering={FadeInDown.delay(100).springify()} style={styles.heroEmoji}>💨</Animated.Text>
-        <Animated.Text entering={FadeInDown.delay(200).springify()} style={styles.heroTitle}>Shisha Delivery</Animated.Text>
-        <Animated.Text entering={FadeInDown.delay(300).springify()} style={styles.heroSubtitle}>Premium tobacco, delivered fast</Animated.Text>
+        <Animated.Text entering={FadeInDown.delay(100).springify()} style={styles.brandTitle}>SHISHA</Animated.Text>
+        <Animated.View entering={FadeInDown.delay(200).springify()} style={styles.brandIcon}>
+          <Text style={styles.pillEmoji}>💊</Text>
+        </Animated.View>
+        <Animated.Text entering={FadeInDown.delay(300).springify()} style={styles.tagline}>Premium Delivery</Animated.Text>
 
         <Animated.View entering={FadeInUp.delay(500).springify()} style={styles.landingButtons}>
           <AnimatedPressable onPress={() => { setShowPhoneAuth(true); hapticLight(); }}>
-            <LinearGradient
-              colors={[Colors.gradientStart, Colors.gradientEnd]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.landingBtn}
-            >
-              <Ionicons name="cart-outline" size={24} color="#fff" style={{ marginRight: Spacing.sm }} />
-              <Text style={styles.landingBtnText}>Order Now</Text>
-            </LinearGradient>
+            <View style={styles.orderBtn}>
+              <Text style={styles.orderBtnText}>Order Now</Text>
+            </View>
           </AnimatedPressable>
 
           <AnimatedPressable onPress={() => { router.push('/(auth)/staff-login'); hapticLight(); }}>
             <View style={styles.staffBtn}>
-              <Ionicons name="briefcase-outline" size={24} color={Colors.textSecondary} style={{ marginRight: Spacing.sm }} />
               <Text style={styles.staffBtnText}>Staff Login</Text>
             </View>
           </AnimatedPressable>
@@ -170,13 +156,80 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     justifyContent: 'center',
+    alignItems: 'center',
     padding: Spacing.xl,
   },
-  backArrow: { marginBottom: Spacing.lg },
+  backArrow: { 
+    alignSelf: 'flex-start',
+    marginBottom: Spacing.lg,
+    padding: Spacing.sm,
+    borderRadius: BorderRadius.md,
+    backgroundColor: Colors.surface,
+    ...Shadows.sm,
+  },
+  
+  // Luxury Landing Design
+  brandTitle: {
+    fontSize: 48,
+    fontWeight: '300',
+    color: Colors.primary,
+    letterSpacing: 8,
+    textAlign: 'center',
+    marginBottom: Spacing.lg,
+  },
+  brandIcon: {
+    marginBottom: Spacing.md,
+  },
+  pillEmoji: { 
+    fontSize: 60,
+    textAlign: 'center',
+  },
+  tagline: {
+    fontSize: FontSize.lg,
+    color: Colors.textSecondary,
+    textAlign: 'center',
+    marginBottom: Spacing.xxl * 1.5,
+    fontWeight: '400',
+  },
+  
+  landingButtons: { 
+    gap: Spacing.lg,
+    width: '100%',
+    maxWidth: 280,
+  },
+  orderBtn: {
+    backgroundColor: Colors.primary,
+    borderRadius: BorderRadius.xl,
+    padding: Spacing.lg + 4,
+    alignItems: 'center',
+    ...Shadows.md,
+  },
+  orderBtnText: {
+    fontSize: FontSize.lg,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    letterSpacing: 1,
+  },
+  staffBtn: {
+    backgroundColor: 'transparent',
+    borderRadius: BorderRadius.xl,
+    padding: Spacing.lg + 4,
+    alignItems: 'center',
+    borderWidth: 1.5,
+    borderColor: Colors.primary,
+  },
+  staffBtnText: {
+    fontSize: FontSize.lg,
+    fontWeight: '600',
+    color: Colors.primary,
+    letterSpacing: 1,
+  },
+  
+  // Phone auth form
   emoji: { fontSize: 60, textAlign: 'center', marginBottom: Spacing.md },
   title: {
     fontSize: FontSize.xxl,
-    fontWeight: '800',
+    fontWeight: '700',
     color: Colors.text,
     textAlign: 'center',
   },
@@ -186,50 +239,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: Spacing.xxl,
   },
-  // Hero / Landing
-  heroEmoji: { fontSize: 80, textAlign: 'center', marginBottom: Spacing.md },
-  heroTitle: {
-    fontSize: FontSize.title,
-    fontWeight: '900',
-    color: Colors.text,
-    textAlign: 'center',
+  form: { 
+    gap: Spacing.md,
+    width: '100%',
+    maxWidth: 320,
   },
-  heroSubtitle: {
-    fontSize: FontSize.lg,
-    color: Colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: Spacing.xxl,
-  },
-  landingButtons: { gap: Spacing.md },
-  landingBtn: {
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.lg,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  landingBtnText: {
-    fontSize: FontSize.lg,
-    fontWeight: '700',
-    color: '#fff',
-  },
-  staffBtn: {
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.lg,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Colors.glassStrong,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  staffBtnText: {
-    fontSize: FontSize.lg,
-    fontWeight: '600',
-    color: Colors.textSecondary,
-  },
-  // Phone auth form
-  form: { gap: Spacing.md },
   label: {
     fontSize: FontSize.md,
     fontWeight: '600',
@@ -240,25 +254,29 @@ const styles = StyleSheet.create({
     color: Colors.textMuted,
   },
   input: {
-    backgroundColor: Colors.inputBg,
+    backgroundColor: Colors.surface,
     borderWidth: 1,
     borderColor: Colors.border,
     borderRadius: BorderRadius.md,
-    padding: Spacing.md,
+    padding: Spacing.md + 2,
     fontSize: FontSize.lg,
     color: Colors.text,
-    letterSpacing: 2,
+    letterSpacing: 1,
+    ...Shadows.sm,
   },
   button: {
+    backgroundColor: Colors.primary,
     borderRadius: BorderRadius.md,
-    padding: Spacing.md,
+    padding: Spacing.md + 2,
     alignItems: 'center',
     marginTop: Spacing.sm,
+    ...Shadows.md,
   },
   buttonText: {
     fontSize: FontSize.md,
-    fontWeight: '700',
-    color: '#fff',
+    fontWeight: '600',
+    color: '#FFFFFF',
+    letterSpacing: 1,
   },
   error: {
     color: Colors.error,
@@ -266,5 +284,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   linkBtn: { alignItems: 'center', marginTop: Spacing.sm },
-  linkText: { color: Colors.primaryLight, fontSize: FontSize.sm },
+  linkText: { 
+    color: Colors.primary, 
+    fontSize: FontSize.sm,
+    fontWeight: '500',
+  },
 });

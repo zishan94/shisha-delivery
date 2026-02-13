@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { View, Text, TextInput, FlatList, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, FontSize, Spacing, BorderRadius } from '@/constants/theme';
+import { Colors, FontSize, Spacing, BorderRadius, Shadows } from '@/constants/theme';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSocket } from '@/contexts/SocketContext';
 import { API_URL } from '@/constants/config';
@@ -89,8 +89,8 @@ export default function ChatView({ orderId }: Props) {
         <View style={[styles.msgRow, isMe && styles.msgRowMe]}>
           <View style={[styles.bubble, isMe ? styles.bubbleMe : styles.bubbleOther]}>
             {!isMe && <Text style={styles.senderName}>{item.sender_name}</Text>}
-            <Text style={styles.msgText}>{item.text}</Text>
-            <Text style={styles.msgTime}>
+            <Text style={[styles.msgText, { color: isMe ? '#fff' : Colors.text }]}>{item.text}</Text>
+            <Text style={[styles.msgTime, { color: isMe ? 'rgba(255,255,255,0.7)' : Colors.textMuted }]}>
               {item.created_at ? new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
             </Text>
           </View>
@@ -149,10 +149,12 @@ const styles = StyleSheet.create({
   bubbleMe: {
     backgroundColor: Colors.primary,
     borderBottomRightRadius: 4,
+    ...Shadows.md,
   },
   bubbleOther: {
-    backgroundColor: Colors.glassStrong,
+    backgroundColor: Colors.surface,
     borderBottomLeftRadius: 4,
+    ...Shadows.md,
   },
   senderName: {
     fontSize: FontSize.xs,

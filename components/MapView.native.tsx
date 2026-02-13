@@ -1,6 +1,6 @@
-import React from 'react';
-import RNMapView, { Marker, Polyline, UrlTile } from 'react-native-maps';
-import { StyleSheet } from 'react-native';
+import React, { useRef, useCallback } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { WebView } from 'react-native-webview';
 import { DEFAULT_REGION } from '@/constants/config';
 import { Colors } from '@/constants/theme';
 
@@ -33,58 +33,93 @@ export default function MapViewComponent({
   onPress,
   onMarkerPress,
   style,
-  children,
 }: Props) {
-  const mapRegion = region ? {
-    ...region,
-    latitudeDelta: region.latitudeDelta || 0.05,
-    longitudeDelta: region.longitudeDelta || 0.05,
-  } : DEFAULT_REGION;
+  const lat = region?.latitude ?? DEFAULT_REGION.latitude;
+  const lng = region?.longitude ?? DEFAULT_REGION.longitude;
+  const zoom = region?.latitudeDelta ? Math.round(Math.log2(360 / (region.latitudeDelta || 0.05)) + 1) : 13;
 
-  const darkMapStyle = [
-    { elementType: 'geometry', stylers: [{ color: '#0A0A1A' }] },
-    { elementType: 'labels.text.fill', stylers: [{ color: '#6EE7B7' }] },
-    { elementType: 'labels.text.stroke', stylers: [{ color: '#0A0A1A' }] },
-    { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#1E293B' }] },
-    { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#0F172A' }] },
-  ];
+  const markersJSON = JSON.stringify(markers);
+  const routeJSON = JSON.stringify(routeCoords || []);
+
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    *{margin:0;padding:0}
+    html,body,#map{width:100%;height:100%}
+    .leaflet-control-attribution{font-size:8px!important;opacity:0.6}
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <script>
+    var map = L.map('map',{zoomControl:false}).setView([${lat},${lng}],${zoom});
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+      attribution:'© OSM',
+      maxZoom:19
+    }).addTo(map);
+
+    var markers = ${markersJSON};
+    markers.forEach(function(m){
+      var icon = L.divIcon({
+        html:'<div style="width:24px;height:24px;border-radius:50%;background:'+(m.pinColor||'${Colors.primary}')+';border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3)"></div>',
+        className:'',
+        iconSize:[24,24],
+        iconAnchor:[12,12]
+      });
+      var marker = L.marker([m.latitude,m.longitude],{icon:icon}).addTo(map);
+      if(m.title) marker.bindPopup('<b>'+m.title+'</b>'+(m.description?'<br>'+m.description:''));
+      marker.on('click',function(){
+        window.ReactNativeWebView.postMessage(JSON.stringify({type:'markerPress',id:m.id}));
+      });
+    });
+
+    var route = ${routeJSON};
+    if(route.length>1){
+      var latlngs = route.map(function(r){return[r.latitude,r.longitude]});
+      L.polyline(latlngs,{color:'${Colors.primary}',weight:4,opacity:0.8}).addTo(map);
+    }
+
+    map.on('click',function(e){
+      window.ReactNativeWebView.postMessage(JSON.stringify({
+        type:'mapPress',
+        coordinate:{latitude:e.latlng.lat,longitude:e.latlng.lng}
+      }));
+    });
+  </script>
+</body>
+</html>`;
+
+  const handleMessage = useCallback((event: any) => {
+    try {
+      const data = JSON.parse(event.nativeEvent.data);
+      if (data.type === 'mapPress' && onPress) {
+        onPress({ nativeEvent: { coordinate: data.coordinate } });
+      }
+      if (data.type === 'markerPress' && onMarkerPress) {
+        onMarkerPress(data.id);
+      }
+    } catch {}
+  }, [onPress, onMarkerPress]);
 
   return (
-    <RNMapView
-      style={[styles.map, style]}
-      initialRegion={mapRegion}
-      region={mapRegion}
-      onPress={onPress}
-      mapType="standard"
-      customMapStyle={darkMapStyle}
-    >
-      <UrlTile
-        urlTemplate="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-        maximumZ={19}
-        flipY={false}
+    <View style={[styles.map, style]}>
+      <WebView
+        source={{ html }}
+        style={{ flex: 1 }}
+        onMessage={handleMessage}
+        scrollEnabled={false}
+        javaScriptEnabled
+        originWhitelist={['*']}
       />
-      {markers.map((m) => (
-        <Marker
-          key={m.id}
-          coordinate={{ latitude: m.latitude, longitude: m.longitude }}
-          title={m.title}
-          description={m.description}
-          pinColor={m.pinColor}
-          onPress={() => onMarkerPress?.(m.id)}
-        />
-      ))}
-      {routeCoords && routeCoords.length > 1 && (
-        <Polyline
-          coordinates={routeCoords}
-          strokeColor={Colors.primary}
-          strokeWidth={4}
-        />
-      )}
-      {children}
-    </RNMapView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  map: { flex: 1, width: '100%' },
+  map: { flex: 1, width: '100%', borderRadius: 12, overflow: 'hidden' },
 });

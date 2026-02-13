@@ -9,7 +9,7 @@ import OrderCard from '@/components/OrderCard';
 import SkeletonLoader from '@/components/SkeletonLoader';
 import AnimatedPressable from '@/components/AnimatedPressable';
 import { useSocket } from '@/contexts/SocketContext';
-import { Colors, FontSize, Spacing, BorderRadius } from '@/constants/theme';
+import { Colors, FontSize, Spacing, BorderRadius, Shadows } from '@/constants/theme';
 import { API_URL } from '@/constants/config';
 import { showAlert } from '@/utils/alert';
 import { hapticSuccess, hapticError } from '@/utils/haptics';
@@ -129,10 +129,10 @@ export default function ApproverDashboard() {
             </View>
           </AnimatedPressable>
           <AnimatedPressable style={styles.approveBtn} onPress={() => approveOrder(item.id)}>
-            <LinearGradient colors={[Colors.success, '#059669']} style={styles.approveBtnInner}>
+            <View style={styles.approveBtnInner}>
               <Ionicons name="checkmark" size={18} color="#fff" />
               <Text style={styles.approveText}>Approve</Text>
-            </LinearGradient>
+            </View>
           </AnimatedPressable>
         </View>
       )}
@@ -142,8 +142,8 @@ export default function ApproverDashboard() {
   return (
     <View style={styles.container}>
       <GradientHeader
-        title="Pending Orders"
-        subtitle={`${orders.length} awaiting review`}
+        title="✅ Pending Orders"
+        subtitle={`${orders.length} order${orders.length !== 1 ? 's' : ''} awaiting review`}
         right={
           <View style={styles.headerRight}>
             {orders.length > 0 && (
@@ -152,17 +152,17 @@ export default function ApproverDashboard() {
               </View>
             )}
             <TouchableOpacity onPress={() => { setBatchMode(!batchMode); setSelected(new Set()); }}>
-              <Text style={styles.batchToggle}>{batchMode ? 'Cancel' : 'Batch'}</Text>
+              <Text style={styles.batchToggle}>{batchMode ? '❌ Cancel' : '📋 Batch'}</Text>
             </TouchableOpacity>
           </View>
         }
       />
       {batchMode && selected.size > 0 && (
         <AnimatedPressable onPress={batchApprove}>
-          <LinearGradient colors={[Colors.success, '#059669']} style={styles.batchBar}>
+          <View style={styles.batchBar}>
             <Ionicons name="checkmark-done" size={20} color="#fff" />
             <Text style={styles.batchText}>Approve {selected.size} orders</Text>
-          </LinearGradient>
+          </View>
         </AnimatedPressable>
       )}
       {!loaded ? (
@@ -190,42 +190,72 @@ export default function ApproverDashboard() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background },
-  list: { padding: Spacing.md },
-  headerRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  list: { padding: Spacing.md, paddingBottom: Spacing.xxl },
+  headerRight: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
   countBadge: {
-    backgroundColor: '#fff', borderRadius: 12, minWidth: 24, height: 24,
-    justifyContent: 'center', alignItems: 'center', paddingHorizontal: 6,
+    backgroundColor: '#fff', borderRadius: 14, minWidth: 28, height: 28,
+    justifyContent: 'center', alignItems: 'center', paddingHorizontal: Spacing.sm,
+    ...Shadows.sm,
   },
-  countText: { color: Colors.primary, fontSize: 12, fontWeight: '800' },
-  batchToggle: { color: '#fff', fontSize: FontSize.sm, fontWeight: '700' },
+  countText: { color: Colors.primary, fontSize: 13, fontWeight: '900' },
+  batchToggle: { 
+    color: '#fff', 
+    fontSize: FontSize.md, 
+    fontWeight: '700',
+    textShadowColor: 'rgba(0,0,0,0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
+  },
   batchBar: {
-    margin: Spacing.md, marginBottom: 0, padding: Spacing.md,
-    borderRadius: BorderRadius.md, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 8,
+    margin: Spacing.md, marginBottom: 0, padding: Spacing.lg,
+    borderRadius: BorderRadius.xl, alignItems: 'center', flexDirection: 'row', 
+    justifyContent: 'center', gap: Spacing.sm,
+    backgroundColor: Colors.success,
+    ...Shadows.lg,
   },
-  batchText: { color: '#fff', fontSize: FontSize.md, fontWeight: '700' },
+  batchText: { color: '#fff', fontSize: FontSize.lg, fontWeight: '800' },
   actionRow: {
-    flexDirection: 'row', gap: Spacing.sm,
-    marginBottom: Spacing.md, marginTop: -Spacing.xs,
+    flexDirection: 'row', gap: Spacing.md,
+    marginBottom: Spacing.lg, marginTop: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
   },
   rejectBtn: {
-    flex: 1, backgroundColor: Colors.glassStrong, padding: Spacing.sm,
-    borderRadius: BorderRadius.md, alignItems: 'center', borderWidth: 1, borderColor: Colors.border,
-    flexDirection: 'row', justifyContent: 'center', gap: 4,
+    flex: 1, backgroundColor: Colors.surface, padding: Spacing.md,
+    borderRadius: BorderRadius.xl, alignItems: 'center',
+    flexDirection: 'row', justifyContent: 'center', gap: 6,
+    ...Shadows.sm,
   },
-  rejectText: { color: Colors.error, fontWeight: '600' },
+  rejectText: { color: Colors.error, fontWeight: '700', fontSize: FontSize.md },
   chatBtn: {
-    padding: Spacing.sm, borderRadius: BorderRadius.md,
-    backgroundColor: Colors.glassStrong, borderWidth: 1, borderColor: Colors.border,
-    justifyContent: 'center', alignItems: 'center', width: 44,
+    padding: Spacing.md, borderRadius: BorderRadius.xl,
+    backgroundColor: Colors.surface,
+    justifyContent: 'center', alignItems: 'center', width: 52,
+    ...Shadows.sm,
   },
   approveBtn: { flex: 1 },
   approveBtnInner: {
-    padding: Spacing.sm, borderRadius: BorderRadius.md, alignItems: 'center',
-    flexDirection: 'row', justifyContent: 'center', gap: 4,
+    padding: Spacing.md, borderRadius: BorderRadius.xl, alignItems: 'center',
+    flexDirection: 'row', justifyContent: 'center', gap: 6,
+    backgroundColor: Colors.success,
+    ...Shadows.md,
   },
-  approveText: { color: '#fff', fontWeight: '700' },
-  empty: { alignItems: 'center', marginTop: Spacing.xxl },
-  emptyEmoji: { fontSize: 48, marginBottom: Spacing.md },
-  emptyText: { fontSize: FontSize.lg, color: Colors.text, fontWeight: '700' },
-  emptySubtext: { fontSize: FontSize.sm, color: Colors.textMuted },
+  approveText: { color: '#fff', fontWeight: '800', fontSize: FontSize.md },
+  empty: { 
+    alignItems: 'center', 
+    marginTop: Spacing.xxl,
+    paddingHorizontal: Spacing.lg,
+  },
+  emptyEmoji: { fontSize: 64, marginBottom: Spacing.lg },
+  emptyText: { 
+    fontSize: FontSize.xl, 
+    color: Colors.text, 
+    fontWeight: '800',
+    marginBottom: 6,
+    textAlign: 'center',
+  },
+  emptySubtext: { 
+    fontSize: FontSize.md, 
+    color: Colors.textMuted,
+    textAlign: 'center',
+  },
 });

@@ -17,7 +17,7 @@ import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSocket } from '@/contexts/SocketContext';
-import { Colors, FontSize, Spacing, BorderRadius, StatusColors, StatusLabels } from '@/constants/theme';
+import { Colors, FontSize, Spacing, BorderRadius, StatusColors, StatusLabels, Shadows } from '@/constants/theme';
 import { API_URL, OSRM_BASE, DELIVERY_BUFFER_MINUTES } from '@/constants/config';
 import MapViewComponent from '@/components/MapView';
 import ChatView from '@/components/ChatView';
@@ -619,11 +619,10 @@ const styles = StyleSheet.create({
   statusCard: {
     margin: Spacing.md,
     marginBottom: 0,
-    backgroundColor: Colors.card,
+    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.lg,
     padding: Spacing.lg,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
+    ...Shadows.md,
   },
   statusHeader: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
   statusDot: { width: 14, height: 14, borderRadius: 7 },
@@ -645,11 +644,10 @@ const styles = StyleSheet.create({
   timelineCard: {
     margin: Spacing.md,
     marginBottom: 0,
-    backgroundColor: Colors.card,
+    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.lg,
     padding: Spacing.lg,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
+    ...Shadows.md,
   },
   cardTitle: {
     fontSize: FontSize.md,
@@ -663,11 +661,10 @@ const styles = StyleSheet.create({
   detailsCard: {
     margin: Spacing.md,
     marginBottom: 0,
-    backgroundColor: Colors.card,
+    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.lg,
     padding: Spacing.lg,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
+    ...Shadows.md,
   },
   detailRow: {
     flexDirection: 'row',
@@ -683,15 +680,14 @@ const styles = StyleSheet.create({
   // Actions
   actions: { padding: Spacing.md, gap: Spacing.sm },
   chatBtn: {
-    backgroundColor: Colors.glassStrong,
+    backgroundColor: Colors.surface,
     padding: Spacing.md,
     borderRadius: BorderRadius.md,
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.border,
     flexDirection: 'row',
     justifyContent: 'center',
     gap: 8,
+    ...Shadows.sm,
   },
   chatBtnText: { color: Colors.text, fontSize: FontSize.md, fontWeight: '600' },
   backBtn: {

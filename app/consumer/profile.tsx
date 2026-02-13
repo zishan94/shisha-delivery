@@ -3,17 +3,18 @@ import { View, Text, StyleSheet } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSocket } from '@/contexts/SocketContext';
-import GradientHeader from '@/components/GradientHeader';
 import AnimatedPressable from '@/components/AnimatedPressable';
-import { Colors, FontSize, Spacing, BorderRadius } from '@/constants/theme';
+import { Colors, FontSize, Spacing, BorderRadius, Shadows } from '@/constants/theme';
 import { showAlert } from '@/utils/alert';
 
 export default function ProfileScreen() {
   const { user, logout } = useAuth();
   const { isConnected } = useSocket();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const handleLogout = () => {
     showAlert('Logout', 'Are you sure?', [
@@ -26,8 +27,10 @@ export default function ProfileScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <GradientHeader title="Profile" />
+    <View style={[styles.container, { paddingTop: insets.top }]}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Profile</Text>
+      </View>
       <View style={styles.content}>
         <Animated.View entering={FadeInDown.delay(100).springify()} style={styles.avatar}>
           <Text style={styles.avatarText}>{user?.name?.[0]?.toUpperCase() || '?'}</Text>
@@ -68,6 +71,16 @@ export default function ProfileScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background },
+  header: {
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 20,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: Colors.text,
+  },
   content: { alignItems: 'center', padding: Spacing.xl },
   avatar: {
     width: 80, height: 80, borderRadius: 40, backgroundColor: Colors.primary,
@@ -83,8 +96,8 @@ const styles = StyleSheet.create({
   },
   badgeText: { color: Colors.primary, fontSize: FontSize.sm, fontWeight: '600' },
   infoCard: {
-    width: '100%', backgroundColor: Colors.card, borderRadius: BorderRadius.lg,
-    padding: Spacing.lg, marginTop: Spacing.xl, borderWidth: 1, borderColor: Colors.cardBorder,
+    width: '100%', backgroundColor: Colors.surface, borderRadius: BorderRadius.lg,
+    padding: Spacing.lg, marginTop: Spacing.xl, ...Shadows.md,
   },
   infoRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: Spacing.sm },
   infoLabel: { fontSize: FontSize.md, color: Colors.textSecondary },

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors, FontSize, Spacing, BorderRadius } from '@/constants/theme';
+import { Colors, FontSize, Spacing, BorderRadius, Shadows } from '@/constants/theme';
 import { useSocket } from '@/contexts/SocketContext';
 
 export default function NotificationBanner() {
@@ -51,13 +51,7 @@ const styles = StyleSheet.create({
     padding: Spacing.md,
     borderLeftWidth: 4,
     borderLeftColor: Colors.primary,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
-    shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 12,
-    elevation: 8,
+    ...Shadows.md,
   },
   title: { fontSize: FontSize.md, fontWeight: '700', color: Colors.text },
   body: { fontSize: FontSize.sm, color: Colors.textSecondary, marginTop: 2 },

@@ -5,7 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '@/contexts/AuthContext';
-import { Colors, FontSize, Spacing, BorderRadius } from '@/constants/theme';
+import { Colors, FontSize, Spacing, BorderRadius, Shadows } from '@/constants/theme';
 import AnimatedPressable from '@/components/AnimatedPressable';
 import { hapticSuccess } from '@/utils/haptics';
 
@@ -82,14 +82,9 @@ export default function StaffLoginScreen() {
           {error ? <Animated.Text entering={FadeIn} style={styles.error}>{error}</Animated.Text> : null}
 
           <AnimatedPressable onPress={handleLogin} disabled={loading}>
-            <LinearGradient
-              colors={[Colors.gradientStart, Colors.gradientEnd]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.button}
-            >
+            <View style={styles.button}>
               <Text style={styles.buttonText}>{loading ? 'Logging in...' : 'Login'}</Text>
-            </LinearGradient>
+            </View>
           </AnimatedPressable>
 
           <View style={styles.hintBox}>
@@ -111,16 +106,26 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: Spacing.xl,
   },
-  backArrow: { position: 'absolute', top: 60, left: Spacing.xl, zIndex: 10 },
+  backArrow: { 
+    position: 'absolute', 
+    top: 60, 
+    left: Spacing.xl, 
+    zIndex: 10,
+    padding: Spacing.sm,
+    borderRadius: BorderRadius.md,
+    backgroundColor: Colors.surface,
+    ...Shadows.sm,
+  },
   iconContainer: {
     alignSelf: 'center',
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: Colors.glassStrong,
+    backgroundColor: Colors.surface,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: Spacing.md,
+    ...Shadows.md,
   },
   title: {
     fontSize: FontSize.xxl,
@@ -145,10 +150,11 @@ const styles = StyleSheet.create({
   inputRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.inputBg,
+    backgroundColor: Colors.surface,
     borderWidth: 1,
     borderColor: Colors.border,
     borderRadius: BorderRadius.md,
+    ...Shadows.sm,
   },
   inputIcon: { marginLeft: Spacing.md },
   input: {
@@ -163,6 +169,8 @@ const styles = StyleSheet.create({
     padding: Spacing.md,
     alignItems: 'center',
     marginTop: Spacing.sm,
+    backgroundColor: Colors.primary,
+    ...Shadows.md,
   },
   buttonText: {
     fontSize: FontSize.md,
@@ -175,12 +183,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   hintBox: {
-    backgroundColor: Colors.glass,
+    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.md,
     padding: Spacing.md,
-    borderWidth: 1,
-    borderColor: Colors.border,
     marginTop: Spacing.sm,
+    ...Shadows.sm,
   },
   hintTitle: {
     fontSize: FontSize.sm,

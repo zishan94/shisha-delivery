@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import GradientHeader from '@/components/GradientHeader';
 import OrderCard from '@/components/OrderCard';
@@ -10,7 +9,7 @@ import AnimatedPressable from '@/components/AnimatedPressable';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSocket } from '@/contexts/SocketContext';
 import { useLocation } from '@/contexts/LocationContext';
-import { Colors, FontSize, Spacing, BorderRadius } from '@/constants/theme';
+import { Colors, FontSize, Spacing, BorderRadius, Shadows } from '@/constants/theme';
 import { API_URL, DRIVER_LOCATION_INTERVAL_MS } from '@/constants/config';
 import { showAlert } from '@/utils/alert';
 import { hapticSuccess, hapticMedium } from '@/utils/haptics';
@@ -110,14 +109,21 @@ export default function DriverDashboard() {
   return (
     <View style={styles.container}>
       <GradientHeader
-        title="Deliveries"
-        subtitle={`${orders.length} assigned`}
+        title="🚗 My Deliveries"
+        subtitle={`${orders.length} order${orders.length !== 1 ? 's' : ''} assigned`}
         right={
           <AnimatedPressable onPress={tracking ? stopTracking : startTracking}>
-            <View style={[styles.trackingBadge, { backgroundColor: tracking ? 'rgba(16,185,129,0.3)' : Colors.glassStrong }]}>
-              <Ionicons name={tracking ? 'radio' : 'radio-outline'} size={16} color={tracking ? Colors.primary : Colors.textMuted} />
-              <Text style={[styles.trackingText, { color: tracking ? Colors.primary : Colors.textMuted }]}>
-                {tracking ? 'Live' : 'Off'}
+            <View style={[
+              styles.trackingBadge, 
+              { backgroundColor: tracking ? 'rgba(16,185,129,0.4)' : 'rgba(255,255,255,0.25)' }
+            ]}>
+              <Ionicons 
+                name={tracking ? 'radio' : 'radio-outline'} 
+                size={18} 
+                color={tracking ? Colors.success : '#fff'} 
+              />
+              <Text style={[styles.trackingText, { color: tracking ? Colors.success : '#fff' }]}>
+                {tracking ? '🟢 Live' : '⚫ Off'}
               </Text>
             </View>
           </AnimatedPressable>
@@ -134,19 +140,15 @@ export default function DriverDashboard() {
               <OrderCard order={item} showConsumer index={index} />
               <View style={styles.actionRow}>
                 {item.status === 'assigned' && (
-                  <AnimatedPressable style={{ flex: 1 }} onPress={() => startDelivering(item.id)}>
-                    <LinearGradient colors={[Colors.info, '#2563EB']} style={styles.actionBtn}>
-                      <Ionicons name="car-sport" size={20} color="#fff" />
-                      <Text style={styles.actionText}>Start Delivering</Text>
-                    </LinearGradient>
+                  <AnimatedPressable style={[styles.actionBtn, { flex: 1 }]} onPress={() => startDelivering(item.id)}>
+                    <Ionicons name="car-sport" size={20} color="#fff" />
+                    <Text style={styles.actionText}>Start Delivering</Text>
                   </AnimatedPressable>
                 )}
                 {item.status === 'delivering' && (
-                  <AnimatedPressable style={{ flex: 1 }} onPress={() => markDelivered(item.id)}>
-                    <LinearGradient colors={[Colors.success, '#059669']} style={styles.actionBtn}>
-                      <Ionicons name="checkmark-circle" size={20} color="#fff" />
-                      <Text style={styles.actionText}>Mark Delivered</Text>
-                    </LinearGradient>
+                  <AnimatedPressable style={[styles.actionBtn, { flex: 1 }]} onPress={() => markDelivered(item.id)}>
+                    <Ionicons name="checkmark-circle" size={20} color="#fff" />
+                    <Text style={styles.actionText}>Mark Delivered</Text>
                   </AnimatedPressable>
                 )}
               </View>
@@ -170,20 +172,65 @@ export default function DriverDashboard() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background },
-  list: { padding: Spacing.md },
+  list: { padding: Spacing.md, paddingBottom: Spacing.xxl },
   trackingBadge: {
-    paddingHorizontal: 12, paddingVertical: 6, borderRadius: BorderRadius.full,
-    flexDirection: 'row', alignItems: 'center', gap: 6,
+    paddingHorizontal: Spacing.md, 
+    paddingVertical: Spacing.sm, 
+    borderRadius: BorderRadius.full,
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    gap: 6,
+    shadowColor: 'rgba(0,0,0,0.3)',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  trackingText: { fontSize: FontSize.xs, fontWeight: '700' },
-  actionRow: { flexDirection: 'row', gap: Spacing.sm, marginBottom: Spacing.md, marginTop: -Spacing.xs },
+  trackingText: { 
+    fontSize: FontSize.sm, 
+    fontWeight: '800',
+    textShadowColor: 'rgba(0,0,0,0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
+  },
+  actionRow: { 
+    flexDirection: 'row', 
+    gap: Spacing.md, 
+    marginBottom: Spacing.lg, 
+    marginTop: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
+  },
   actionBtn: {
-    padding: Spacing.md, borderRadius: BorderRadius.md, alignItems: 'center',
-    flexDirection: 'row', justifyContent: 'center', gap: 8,
+    backgroundColor: Colors.primary,
+    padding: Spacing.lg, 
+    borderRadius: BorderRadius.xl, 
+    alignItems: 'center',
+    flexDirection: 'row', 
+    justifyContent: 'center', 
+    gap: Spacing.sm,
+    ...Shadows.md,
   },
-  actionText: { color: '#fff', fontWeight: '700', fontSize: FontSize.md },
-  empty: { alignItems: 'center', marginTop: Spacing.xxl },
-  emptyEmoji: { fontSize: 48, marginBottom: Spacing.md },
-  emptyText: { fontSize: FontSize.lg, color: Colors.text, fontWeight: '700' },
-  emptySubtext: { fontSize: FontSize.sm, color: Colors.textMuted },
+  actionText: { 
+    color: '#fff', 
+    fontWeight: '800', 
+    fontSize: FontSize.lg,
+  },
+  empty: { 
+    alignItems: 'center', 
+    marginTop: Spacing.xxl,
+    paddingHorizontal: Spacing.lg,
+  },
+  emptyEmoji: { fontSize: 64, marginBottom: Spacing.lg },
+  emptyText: { 
+    fontSize: FontSize.xl, 
+    color: Colors.text, 
+    fontWeight: '800',
+    marginBottom: 6,
+    textAlign: 'center',
+  },
+  emptySubtext: { 
+    fontSize: FontSize.md, 
+    color: Colors.textMuted,
+    textAlign: 'center',
+  },
 });

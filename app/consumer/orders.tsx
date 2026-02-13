@@ -2,12 +2,12 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
-import GradientHeader from '@/components/GradientHeader';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import OrderCard from '@/components/OrderCard';
 import SkeletonLoader from '@/components/SkeletonLoader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSocket } from '@/contexts/SocketContext';
-import { Colors, FontSize, Spacing } from '@/constants/theme';
+import { Colors, FontSize, Spacing, Shadows } from '@/constants/theme';
 import { API_URL } from '@/constants/config';
 
 export default function OrdersScreen() {
@@ -17,6 +17,7 @@ export default function OrdersScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const loadOrders = useCallback(async () => {
     if (!user) return;
@@ -51,8 +52,11 @@ export default function OrdersScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <GradientHeader title="My Orders" subtitle={`${orders.length} orders`} />
+    <View style={[styles.container, { paddingTop: insets.top }]}>
+      <View style={styles.header}>
+        <Text style={styles.title}>My Orders</Text>
+        <Text style={styles.subtitle}>{orders.length} order{orders.length !== 1 ? 's' : ''}</Text>
+      </View>
       {!loaded ? (
         <SkeletonLoader count={3} />
       ) : (
@@ -69,6 +73,7 @@ export default function OrdersScreen() {
           contentContainerStyle={styles.list}
           refreshing={refreshing}
           onRefresh={onRefresh}
+          showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <Animated.View entering={FadeIn.delay(200)} style={styles.emptyContainer}>
               <Text style={styles.emptyEmoji}>📦</Text>
@@ -84,9 +89,42 @@ export default function OrdersScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background },
-  list: { padding: Spacing.md },
-  emptyContainer: { alignItems: 'center', marginTop: Spacing.xxl },
-  emptyEmoji: { fontSize: 48, marginBottom: Spacing.md },
-  emptyText: { fontSize: FontSize.lg, color: Colors.text, fontWeight: '700' },
-  emptySubtext: { fontSize: FontSize.sm, color: Colors.textMuted, marginTop: 4 },
+  header: {
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 20,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: Colors.text,
+    marginBottom: 4,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+  },
+  list: { padding: Spacing.md, paddingBottom: Spacing.xxl },
+  emptyContainer: { 
+    alignItems: 'center', 
+    marginTop: Spacing.xxl,
+    paddingHorizontal: Spacing.lg,
+  },
+  emptyEmoji: { 
+    fontSize: 64, 
+    marginBottom: Spacing.lg 
+  },
+  emptyText: { 
+    fontSize: FontSize.xl, 
+    color: Colors.text, 
+    fontWeight: '800',
+    marginBottom: 6,
+    textAlign: 'center',
+  },
+  emptySubtext: { 
+    fontSize: FontSize.md, 
+    color: Colors.textMuted, 
+    textAlign: 'center',
+    lineHeight: 20,
+  },
 });

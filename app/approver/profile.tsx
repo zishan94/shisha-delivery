@@ -7,7 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useSocket } from '@/contexts/SocketContext';
 import GradientHeader from '@/components/GradientHeader';
 import AnimatedPressable from '@/components/AnimatedPressable';
-import { Colors, FontSize, Spacing, BorderRadius } from '@/constants/theme';
+import { Colors, FontSize, Spacing, BorderRadius, Shadows } from '@/constants/theme';
 import { showAlert } from '@/utils/alert';
 
 export default function ApproverProfile() {
@@ -76,8 +76,8 @@ const styles = StyleSheet.create({
   },
   badgeText: { color: Colors.primary, fontSize: FontSize.sm, fontWeight: '600' },
   infoCard: {
-    width: '100%', backgroundColor: Colors.card, borderRadius: BorderRadius.lg,
-    padding: Spacing.lg, marginTop: Spacing.xl, borderWidth: 1, borderColor: Colors.cardBorder,
+    width: '100%', backgroundColor: Colors.surface, borderRadius: BorderRadius.lg,
+    padding: Spacing.lg, marginTop: Spacing.xl, ...Shadows.md,
   },
   infoRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: Spacing.sm },
   infoLabel: { fontSize: FontSize.md, color: Colors.textSecondary },

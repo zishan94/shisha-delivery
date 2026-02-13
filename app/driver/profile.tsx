@@ -7,7 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useSocket } from '@/contexts/SocketContext';
 import GradientHeader from '@/components/GradientHeader';
 import AnimatedPressable from '@/components/AnimatedPressable';
-import { Colors, FontSize, Spacing, BorderRadius } from '@/constants/theme';
+import { Colors, FontSize, Spacing, BorderRadius, Shadows } from '@/constants/theme';
 import { showAlert } from '@/utils/alert';
 
 export default function DriverProfile() {
@@ -32,7 +32,7 @@ export default function DriverProfile() {
         <Animated.Text entering={FadeInDown.delay(200).springify()} style={styles.name}>{user?.name}</Animated.Text>
         <Animated.Text entering={FadeInDown.delay(250).springify()} style={styles.phone}>{user?.phone}</Animated.Text>
         <Animated.View entering={FadeInDown.delay(300).springify()} style={styles.badge}>
-          <Ionicons name="car" size={14} color={Colors.info} />
+          <Ionicons name="car" size={14} color={Colors.primary} />
           <Text style={styles.badgeText}>Driver</Text>
         </Animated.View>
         <Animated.View entering={FadeInDown.delay(400).springify()} style={styles.infoCard}>
@@ -63,21 +63,21 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background },
   content: { alignItems: 'center', padding: Spacing.xl },
   avatar: {
-    width: 80, height: 80, borderRadius: 40, backgroundColor: Colors.info,
+    width: 80, height: 80, borderRadius: 40, backgroundColor: Colors.primary,
     justifyContent: 'center', alignItems: 'center', marginBottom: Spacing.md,
   },
   avatarText: { fontSize: FontSize.title, fontWeight: '800', color: '#fff' },
   name: { fontSize: FontSize.xl, fontWeight: '700', color: Colors.text },
   phone: { fontSize: FontSize.md, color: Colors.textSecondary, marginTop: 4 },
   badge: {
-    backgroundColor: `${Colors.info}15`, paddingHorizontal: Spacing.md,
+    backgroundColor: `${Colors.primary}15`, paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.xs, borderRadius: BorderRadius.full, marginTop: Spacing.sm,
     flexDirection: 'row', alignItems: 'center', gap: 6,
   },
-  badgeText: { color: Colors.info, fontSize: FontSize.sm, fontWeight: '600' },
+  badgeText: { color: Colors.primary, fontSize: FontSize.sm, fontWeight: '600' },
   infoCard: {
-    width: '100%', backgroundColor: Colors.card, borderRadius: BorderRadius.lg,
-    padding: Spacing.lg, marginTop: Spacing.xl, borderWidth: 1, borderColor: Colors.cardBorder,
+    width: '100%', backgroundColor: Colors.surface, borderRadius: BorderRadius.lg,
+    padding: Spacing.lg, marginTop: Spacing.xl, ...Shadows.md,
   },
   infoRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: Spacing.sm },
   infoLabel: { fontSize: FontSize.md, color: Colors.textSecondary },

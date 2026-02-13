@@ -7,7 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSocket } from '@/contexts/SocketContext';
 import { useLocation } from '@/contexts/LocationContext';
-import { Colors, FontSize, Spacing, BorderRadius } from '@/constants/theme';
+import { Colors, FontSize, Spacing, BorderRadius, Shadows } from '@/constants/theme';
 import { API_URL, MIN_GRAMS, MAX_GRAMS, GRAM_STEP } from '@/constants/config';
 import MapViewComponent from '@/components/MapView';
 import AnimatedPressable from '@/components/AnimatedPressable';
@@ -25,10 +25,12 @@ export default function OrderScreen() {
   const [grams, setGrams] = useState(50);
   const [address, setAddress] = useState('');
   const [addressError, setAddressError] = useState('');
+  const [customerName, setCustomerName] = useState(user?.name || '');
+  const [customerNameError, setCustomerNameError] = useState('');
   const [deliveryLat, setDeliveryLat] = useState<number | null>(null);
   const [deliveryLng, setDeliveryLng] = useState<number | null>(null);
   const [gpsLoading, setGpsLoading] = useState(false);
-  const [step, setStep] = useState<'amount' | 'address' | 'confirm'>('amount');
+  const [step, setStep] = useState<'amount' | 'address' | 'customer' | 'confirm'>('amount');
   const [submitting, setSubmitting] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [placedOrder, setPlacedOrder] = useState<any>(null);
@@ -50,6 +52,15 @@ export default function OrderScreen() {
       return false;
     }
     setAddressError('');
+    return true;
+  };
+
+  const validateCustomerName = (name: string): boolean => {
+    if (name.trim().length < 2) {
+      setCustomerNameError('Name must be at least 2 characters');
+      return false;
+    }
+    setCustomerNameError('');
     return true;
   };
 
@@ -91,8 +102,14 @@ export default function OrderScreen() {
     }
   };
 
-  const goToConfirm = () => {
+  const goToCustomer = () => {
     if (!validateAddress(address)) return;
+    setStep('customer');
+    hapticLight();
+  };
+
+  const goToConfirm = () => {
+    if (!validateCustomerName(customerName)) return;
     setStep('confirm');
     hapticLight();
   };
@@ -111,6 +128,7 @@ export default function OrderScreen() {
           delivery_address: address,
           delivery_lat: deliveryLat || 47.3769,
           delivery_lng: deliveryLng || 8.5417,
+          customer_name: customerName.trim(),
         }),
       });
       if (!res.ok) {
@@ -149,10 +167,10 @@ export default function OrderScreen() {
             </Animated.View>
             <Animated.View entering={FadeInUp.delay(600).springify()} style={{ width: '100%', gap: Spacing.sm }}>
               <AnimatedPressable onPress={() => router.push({ pathname: '/consumer/tracking', params: { orderId: placedOrder.id.toString() } } as any)}>
-                <LinearGradient colors={[Colors.gradientStart, Colors.gradientEnd]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.confirmBtn}>
+                <View style={styles.confirmBtn}>
                   <Ionicons name="navigate-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
                   <Text style={styles.confirmBtnText}>Track Order</Text>
-                </LinearGradient>
+                </View>
               </AnimatedPressable>
               <AnimatedPressable onPress={() => router.replace('/consumer/orders')}>
                 <View style={styles.confirmSecBtn}>
@@ -213,10 +231,10 @@ export default function OrderScreen() {
               ))}
             </View>
             <AnimatedPressable onPress={() => { setStep('address'); hapticLight(); }}>
-              <LinearGradient colors={[Colors.gradientStart, Colors.gradientEnd]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.nextBtn}>
+              <View style={styles.nextBtn}>
                 <Text style={styles.nextBtnText}>Next: Delivery Address</Text>
                 <Ionicons name="arrow-forward" size={20} color="#fff" />
-              </LinearGradient>
+              </View>
             </AnimatedPressable>
           </Animated.View>
         )}
@@ -263,11 +281,42 @@ export default function OrderScreen() {
                 <Ionicons name="arrow-back" size={18} color={Colors.textSecondary} />
                 <Text style={styles.backBtnText}>Back</Text>
               </TouchableOpacity>
+              <AnimatedPressable onPress={goToCustomer} style={{ flex: 1 }}>
+                <View style={[styles.nextBtn, !address.trim() && { opacity: 0.4 }]}>
+                  <Text style={styles.nextBtnText}>Next: Your Name</Text>
+                  <Ionicons name="arrow-forward" size={20} color="#fff" />
+                </View>
+              </AnimatedPressable>
+            </View>
+          </Animated.View>
+        )}
+
+        {step === 'customer' && (
+          <Animated.View entering={FadeIn.duration(300)} style={styles.section}>
+            <Text style={styles.sectionTitle}>👤 Your Name</Text>
+            <View style={styles.nameInfo}>
+              <Text style={styles.nameInfoText}>We need your name for the delivery person to identify you</Text>
+            </View>
+            <TextInput
+              style={[styles.input, customerNameError ? styles.inputError : null]}
+              value={customerName}
+              onChangeText={(t) => { setCustomerName(t); if (customerNameError) validateCustomerName(t); }}
+              placeholder="Enter your full name..."
+              placeholderTextColor={Colors.textMuted}
+              autoCapitalize="words"
+            />
+            {customerNameError ? <Text style={styles.fieldError}>{customerNameError}</Text> : null}
+            
+            <View style={styles.btnRow}>
+              <TouchableOpacity style={styles.backBtn} onPress={() => setStep('address')}>
+                <Ionicons name="arrow-back" size={18} color={Colors.textSecondary} />
+                <Text style={styles.backBtnText}>Back</Text>
+              </TouchableOpacity>
               <AnimatedPressable onPress={goToConfirm} style={{ flex: 1 }}>
-                <LinearGradient colors={[Colors.gradientStart, Colors.gradientEnd]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={[styles.nextBtn, !address.trim() && { opacity: 0.4 }]}>
+                <View style={[styles.nextBtn, !customerName.trim() && { opacity: 0.4 }]}>
                   <Text style={styles.nextBtnText}>Review Order</Text>
                   <Ionicons name="arrow-forward" size={20} color="#fff" />
-                </LinearGradient>
+                </View>
               </AnimatedPressable>
             </View>
           </Animated.View>
@@ -293,6 +342,10 @@ export default function OrderScreen() {
                 <Text style={styles.summaryValue}>CHF {product.price_per_gram.toFixed(2)}</Text>
               </View>
               <View style={styles.summaryRow}>
+                <Text style={styles.summaryLabel}>Customer</Text>
+                <Text style={styles.summaryValue}>{customerName}</Text>
+              </View>
+              <View style={styles.summaryRow}>
                 <Text style={styles.summaryLabel}>Delivery</Text>
                 <Text style={styles.summaryValue} numberOfLines={2}>{address}</Text>
               </View>
@@ -303,15 +356,15 @@ export default function OrderScreen() {
               </View>
             </View>
             <View style={styles.btnRow}>
-              <TouchableOpacity style={styles.backBtn} onPress={() => setStep('address')}>
+              <TouchableOpacity style={styles.backBtn} onPress={() => setStep('customer')}>
                 <Ionicons name="arrow-back" size={18} color={Colors.textSecondary} />
                 <Text style={styles.backBtnText}>Back</Text>
               </TouchableOpacity>
               <AnimatedPressable onPress={handleSubmit} disabled={submitting} style={{ flex: 1 }}>
-                <LinearGradient colors={[Colors.gradientStart, Colors.gradientEnd]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.nextBtn}>
+                <View style={styles.nextBtn}>
                   <Ionicons name="checkmark-circle" size={20} color="#fff" />
                   <Text style={styles.nextBtnText}>{submitting ? 'Placing...' : 'Confirm Order'}</Text>
-                </LinearGradient>
+                </View>
               </AnimatedPressable>
             </View>
           </Animated.View>
@@ -325,13 +378,12 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background },
   content: { padding: Spacing.md, paddingBottom: Spacing.xxl },
   productCard: {
-    backgroundColor: Colors.card,
+    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.xl,
     padding: Spacing.xl,
     alignItems: 'center',
     marginBottom: Spacing.lg,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
+    ...Shadows.md,
   },
   productEmoji: { fontSize: 56, marginBottom: Spacing.sm },
   productName: { fontSize: FontSize.xl, fontWeight: '800', color: Colors.text },
@@ -342,8 +394,8 @@ const styles = StyleSheet.create({
   sliderRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: Spacing.xl, marginBottom: Spacing.lg },
   gramBtn: {
     width: 52, height: 52, borderRadius: 26,
-    backgroundColor: Colors.glassStrong, justifyContent: 'center', alignItems: 'center',
-    borderWidth: 1, borderColor: Colors.border,
+    backgroundColor: Colors.surface, justifyContent: 'center', alignItems: 'center',
+    ...Shadows.sm,
   },
   gramDisplay: { alignItems: 'center' },
   gramValue: { fontSize: FontSize.title, fontWeight: '900', color: Colors.text },
@@ -351,26 +403,41 @@ const styles = StyleSheet.create({
   quickRow: { flexDirection: 'row', justifyContent: 'center', gap: Spacing.sm, marginBottom: Spacing.lg, flexWrap: 'wrap' },
   quickBtn: {
     paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm,
-    borderRadius: BorderRadius.full, backgroundColor: Colors.glassStrong,
-    borderWidth: 1, borderColor: Colors.border,
+    borderRadius: BorderRadius.full, backgroundColor: Colors.surface,
+    ...Shadows.sm,
   },
   quickBtnActive: { backgroundColor: Colors.primary, borderColor: Colors.primary },
   quickBtnText: { fontSize: FontSize.sm, color: Colors.textSecondary, fontWeight: '600' },
   quickBtnTextActive: { color: '#fff' },
-  nextBtn: { borderRadius: BorderRadius.md, padding: Spacing.md, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 8 },
+  nextBtn: { borderRadius: BorderRadius.md, padding: Spacing.md, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 8, backgroundColor: Colors.primary, ...Shadows.md },
   nextBtnText: { fontSize: FontSize.md, fontWeight: '700', color: '#fff' },
   input: {
-    backgroundColor: Colors.inputBg, borderWidth: 1, borderColor: Colors.border,
+    backgroundColor: Colors.surface, borderWidth: 1, borderColor: Colors.border,
     borderRadius: BorderRadius.md, padding: Spacing.md, fontSize: FontSize.md,
     color: Colors.text, minHeight: 60, textAlignVertical: 'top',
+    ...Shadows.sm,
   },
   inputError: { borderColor: Colors.error },
   fieldError: { color: Colors.error, fontSize: FontSize.xs, marginTop: 4 },
+  nameInfo: {
+    backgroundColor: Colors.glassStrong,
+    borderRadius: BorderRadius.md,
+    padding: Spacing.md,
+    marginBottom: Spacing.md,
+    borderLeftWidth: 3,
+    borderLeftColor: Colors.primary,
+  },
+  nameInfoText: {
+    fontSize: FontSize.sm,
+    color: Colors.textSecondary,
+    lineHeight: 18,
+  },
   addressBtns: { flexDirection: 'row', gap: Spacing.sm, marginTop: Spacing.sm },
   gpsBtn: {
-    flex: 1, backgroundColor: Colors.glassStrong, padding: Spacing.md,
-    borderRadius: BorderRadius.md, alignItems: 'center', borderWidth: 1, borderColor: Colors.border,
+    flex: 1, backgroundColor: Colors.surface, padding: Spacing.md,
+    borderRadius: BorderRadius.md, alignItems: 'center',
     flexDirection: 'row', justifyContent: 'center', gap: 8,
+    ...Shadows.sm,
   },
   gpsBtnText: { fontSize: FontSize.sm, color: Colors.text, fontWeight: '600' },
   mapContainer: { height: 200, borderRadius: BorderRadius.md, overflow: 'hidden', marginTop: Spacing.sm },
@@ -378,13 +445,14 @@ const styles = StyleSheet.create({
   btnRow: { flexDirection: 'row', gap: Spacing.sm, marginTop: Spacing.md },
   backBtn: {
     padding: Spacing.md, borderRadius: BorderRadius.md,
-    backgroundColor: Colors.glassStrong, borderWidth: 1, borderColor: Colors.border,
+    backgroundColor: Colors.surface,
     flexDirection: 'row', alignItems: 'center', gap: 4,
+    ...Shadows.sm,
   },
   backBtnText: { color: Colors.textSecondary, fontWeight: '600' },
   summaryCard: {
-    backgroundColor: Colors.card, borderRadius: BorderRadius.xl,
-    padding: Spacing.lg, borderWidth: 1, borderColor: Colors.cardBorder,
+    backgroundColor: Colors.surface, borderRadius: BorderRadius.xl,
+    padding: Spacing.lg, ...Shadows.md,
   },
   receiptHeader: { alignItems: 'center', marginBottom: Spacing.md, paddingBottom: Spacing.sm, borderBottomWidth: 1, borderBottomColor: Colors.border },
   receiptTitle: { fontSize: FontSize.sm, color: Colors.textMuted, textTransform: 'uppercase', letterSpacing: 2, fontWeight: '700' },
@@ -404,18 +472,18 @@ const styles = StyleSheet.create({
   confirmTitle: { fontSize: FontSize.title, fontWeight: '900', color: Colors.text, marginBottom: Spacing.sm },
   confirmSubtitle: { fontSize: FontSize.md, color: Colors.textSecondary, marginBottom: Spacing.xl },
   confirmDetails: {
-    backgroundColor: Colors.card, borderRadius: BorderRadius.xl, padding: Spacing.lg,
+    backgroundColor: Colors.surface, borderRadius: BorderRadius.xl, padding: Spacing.lg,
     alignItems: 'center', width: '100%', marginBottom: Spacing.xl,
-    borderWidth: 1, borderColor: Colors.cardBorder,
+    ...Shadows.md,
   },
   confirmDetailText: { fontSize: FontSize.md, color: Colors.text, fontWeight: '600', marginBottom: 4 },
   confirmDetailPrice: { fontSize: FontSize.lg, color: Colors.secondary, fontWeight: '700', marginBottom: 4 },
   confirmDetailMuted: { fontSize: FontSize.sm, color: Colors.textMuted, marginTop: Spacing.sm },
-  confirmBtn: { borderRadius: BorderRadius.md, padding: Spacing.md, alignItems: 'center', flexDirection: 'row', justifyContent: 'center' },
+  confirmBtn: { borderRadius: BorderRadius.md, padding: Spacing.md, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', backgroundColor: Colors.primary, ...Shadows.md },
   confirmBtnText: { fontSize: FontSize.md, fontWeight: '700', color: '#fff' },
   confirmSecBtn: {
     borderRadius: BorderRadius.md, padding: Spacing.md, alignItems: 'center',
-    backgroundColor: Colors.glassStrong, borderWidth: 1, borderColor: Colors.border,
+    backgroundColor: Colors.surface, ...Shadows.sm,
   },
   confirmSecBtnText: { fontSize: FontSize.md, fontWeight: '600', color: Colors.text },
 });

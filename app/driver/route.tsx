@@ -9,7 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useSocket } from '@/contexts/SocketContext';
 import { useLocation } from '@/contexts/LocationContext';
 import { useOSRM } from '@/hooks/useOSRM';
-import { Colors, FontSize, Spacing, BorderRadius, StatusColors } from '@/constants/theme';
+import { Colors, FontSize, Spacing, BorderRadius, StatusColors, Shadows } from '@/constants/theme';
 import { API_URL } from '@/constants/config';
 
 export default function RouteScreen() {
@@ -85,7 +85,7 @@ export default function RouteScreen() {
 
   return (
     <View style={styles.container}>
-      <GradientHeader title="Route" subtitle={`${orders.length} stops`} />
+      <GradientHeader title="🗺️ Route" subtitle={`${orders.length} stop${orders.length !== 1 ? 's' : ''} planned`} />
 
       {/* Stats bar */}
       {orders.length > 0 && (
@@ -156,41 +156,120 @@ export default function RouteScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background },
   statsBar: {
-    flexDirection: 'row', justifyContent: 'space-around',
-    backgroundColor: Colors.card, borderBottomWidth: 1, borderBottomColor: Colors.border,
-    paddingVertical: Spacing.sm,
+    flexDirection: 'row', 
+    justifyContent: 'space-around',
+    backgroundColor: Colors.surface, 
+    paddingVertical: Spacing.md,
+    ...Shadows.md,
   },
-  stat: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  statValue: { fontSize: FontSize.md, fontWeight: '800', color: Colors.text },
-  statLabel: { fontSize: FontSize.xs, color: Colors.textMuted },
-  mapContainer: { height: '40%' },
-  stops: { flex: 1 },
-  stopsContent: { padding: Spacing.md },
+  stat: { 
+    flexDirection: 'column', 
+    alignItems: 'center', 
+    gap: 2,
+    minWidth: 80,
+  },
+  statValue: { 
+    fontSize: FontSize.lg, 
+    fontWeight: '900', 
+    color: Colors.text,
+    textAlign: 'center',
+  },
+  statLabel: { 
+    fontSize: FontSize.xs, 
+    color: Colors.textMuted,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  mapContainer: { height: '42%' },
+  stops: { flex: 1, backgroundColor: Colors.surface },
+  stopsContent: { padding: Spacing.md, paddingBottom: Spacing.xxl },
   recalcBtn: {
-    backgroundColor: Colors.glassStrong, padding: Spacing.sm,
-    borderRadius: BorderRadius.md, alignItems: 'center', marginBottom: Spacing.md,
-    borderWidth: 1, borderColor: Colors.border, flexDirection: 'row', justifyContent: 'center', gap: 8,
+    backgroundColor: Colors.surface, 
+    padding: Spacing.md,
+    borderRadius: BorderRadius.xl, 
+    alignItems: 'center', 
+    marginBottom: Spacing.lg,
+    flexDirection: 'row', 
+    justifyContent: 'center', 
+    gap: Spacing.sm,
+    ...Shadows.md,
   },
-  recalcText: { color: Colors.text, fontWeight: '600' },
+  recalcText: { 
+    color: Colors.text, 
+    fontWeight: '700',
+    fontSize: FontSize.md,
+  },
   stopCard: {
-    flexDirection: 'row', alignItems: 'center',
-    backgroundColor: Colors.card, borderRadius: BorderRadius.md,
-    padding: Spacing.md, marginBottom: Spacing.sm,
-    borderWidth: 1, borderColor: Colors.cardBorder,
+    flexDirection: 'row', 
+    alignItems: 'center',
+    backgroundColor: Colors.surface, 
+    borderRadius: BorderRadius.xl,
+    padding: Spacing.lg, 
+    marginBottom: Spacing.md,
+    ...Shadows.md,
   },
   stopNumber: {
-    width: 32, height: 32, borderRadius: 16,
-    backgroundColor: Colors.primary, justifyContent: 'center', alignItems: 'center',
-    marginRight: Spacing.md,
+    width: 40, 
+    height: 40, 
+    borderRadius: 20,
+    backgroundColor: Colors.primary, 
+    justifyContent: 'center', 
+    alignItems: 'center',
+    marginRight: Spacing.lg,
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 3,
   },
-  stopNumberText: { color: '#fff', fontWeight: '800', fontSize: FontSize.md },
+  stopNumberText: { 
+    color: '#fff', 
+    fontWeight: '900', 
+    fontSize: FontSize.lg 
+  },
   stopInfo: { flex: 1 },
-  stopName: { fontSize: FontSize.md, fontWeight: '700', color: Colors.text },
-  stopAddress: { fontSize: FontSize.xs, color: Colors.textSecondary, marginTop: 2 },
-  stopEta: { alignItems: 'flex-end', gap: 4 },
-  etaText: { fontSize: FontSize.md, fontWeight: '700', color: Colors.secondary },
-  statusDot: { width: 10, height: 10, borderRadius: 5 },
-  emptyContainer: { alignItems: 'center', marginTop: Spacing.xl },
-  emptyEmoji: { fontSize: 48, marginBottom: Spacing.sm },
-  emptyText: { color: Colors.textMuted, textAlign: 'center' },
+  stopName: { 
+    fontSize: FontSize.lg, 
+    fontWeight: '800', 
+    color: Colors.text,
+    marginBottom: 4,
+  },
+  stopAddress: { 
+    fontSize: FontSize.sm, 
+    color: Colors.textSecondary, 
+    fontWeight: '500',
+    lineHeight: 18,
+  },
+  stopEta: { 
+    alignItems: 'flex-end', 
+    gap: 6 
+  },
+  etaText: { 
+    fontSize: FontSize.lg, 
+    fontWeight: '800', 
+    color: Colors.secondary 
+  },
+  statusDot: { 
+    width: 12, 
+    height: 12, 
+    borderRadius: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  emptyContainer: { 
+    alignItems: 'center', 
+    marginTop: Spacing.xxl,
+    paddingHorizontal: Spacing.lg,
+  },
+  emptyEmoji: { fontSize: 64, marginBottom: Spacing.md },
+  emptyText: { 
+    color: Colors.textMuted, 
+    textAlign: 'center',
+    fontSize: FontSize.md,
+    fontWeight: '600',
+  },
 });

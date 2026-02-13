@@ -14,7 +14,7 @@ export default function RootLayout() {
       <AuthProvider>
         <SocketProvider>
           <LocationProvider>
-            <StatusBar style="light" />
+            <StatusBar style="dark" />
             <NotificationBanner />
             <Stack
               screenOptions={{
