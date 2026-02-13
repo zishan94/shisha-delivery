@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "Shisha Delivery",
+    "slug": "shisha-delivery",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "shisha-delivery",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "splash": {
+      "backgroundColor": "#0A0A0F"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.shisha.delivery",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "We need your location to deliver your order.",
+        "NSLocationAlwaysUsageDescription": "Drivers need background location for delivery tracking."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0A0A0F"
+      },
+      "package": "com.shisha.delivery",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      "expo-location",
+      "expo-asset"
+    ]
+  }
+}
