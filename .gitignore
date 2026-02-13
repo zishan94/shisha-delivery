@@ -1,1 +1,10 @@
-node_modules/\n.expo/\ndist/\nserver/shisha.db\nserver/node_modules/\n*.db
+node_modules/
+.expo/
+dist/
+server/shisha.db
+server/shisha.db-wal
+server/shisha.db-shm
+server/node_modules/
+*.db
+*.db-wal
+*.db-shm
